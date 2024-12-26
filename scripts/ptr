@@ -1,0 +1,38 @@
+#!/bin/bash
+
+
+#--------------------------------------------
+# Prints the written mergertree data
+# usage:
+#   ptr <dirnr>
+#       dirnr doesn't need to be formatted
+#--------------------------------------------
+
+
+
+errmsg='
+prints the written mergertree data
+usage:
+    ptr <dirnr>
+        dirnr doesnt need to be formatted
+
+    ptr <start> <stop>
+        start, stop are output numbers
+'
+
+
+if [[ $# == 1 ]]; then
+    dirnr=`printf "%05d" "$1"` 
+    cat output_"$dirnr"/mergertree.txt*
+
+elif [[ $# == 2 ]]; then
+    for i in `seq $1 $2`; do
+        echo "=============================="
+        echo $i
+        echo "=============================="
+        dirnr=`printf "%05d" "$i"` 
+        cat output_"$dirnr"/mergertree.txt*
+        echo ""
+    done
+fi
+

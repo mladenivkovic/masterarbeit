@@ -1,0 +1,147 @@
+ ============================
+ get_halostats.f03 started.
+ ============================
+ Working with parameters:
+     srcdir:                     output_00041
+     halo:                            5218711
+     ncpu:                                288
+     nc:                                 2000
+     nclumps:                          197833
+     interpolation:                       cic
+     levelmin:                              9
+     levelmax:                             20
+     unit_l:                           68.879    [Mpc]
+     a_exp:                             1.000
+     z:                                -0.000
+ Found        5188 child clumps out of       197833 total clumps in snapshot.
+ Reading in particle data. This may take a while.
+ Nparts kept:     4938700 out of   134217728
+ Checking for periodicity corrections.
+ Need to move some y-values   6.7752609525709774E-009  0.99999999401396766     
+ Computing density field 
+ Written file output_00041/density_image_halo-5218711.dat
+ Read in        93575 galaxies with clumps and       247779 orphan galaxies.
+ Total galaxies in snapshot:      341354
+ Correcting galaxy positions for periodicity.
+ Sorting out Clump Galaxies
+ Found       102        satellite galaxies with clumps out of     93575    galaxies in snapshot.
+ Sorting out Orphan Galaxies
+ Found     13744               orphan galaxies in halo out of    247779     orphans in snapshot.
+ Rmax Radial Profile:  0.19513974665777123       0.70469721843499999        1.0134010423118001     
+ get_halostats.f03 finished.
+ ============================
+ get_halostats.f03 started.
+ ============================
+ Working with parameters:
+     srcdir:                     output_00041
+     halo:                            1307786
+     ncpu:                                288
+     nc:                                 2000
+     nclumps:                          197833
+     interpolation:                       cic
+     levelmin:                              9
+     levelmax:                             20
+     unit_l:                           68.879    [Mpc]
+     a_exp:                             1.000
+     z:                                -0.000
+ Found        3362 child clumps out of       197833 total clumps in snapshot.
+ Reading in particle data. This may take a while.
+ Nparts kept:     3311477 out of   134217728
+ Checking for periodicity corrections.
+ Computing density field 
+ Written file output_00041/density_image_halo-1307786.dat
+ Read in        93575 galaxies with clumps and       247779 orphan galaxies.
+ Total galaxies in snapshot:      341354
+ Sorting out Clump Galaxies
+ Found       126        satellite galaxies with clumps out of     93575    galaxies in snapshot.
+ Sorting out Orphan Galaxies
+ Found      9071               orphan galaxies in halo out of    247779     orphans in snapshot.
+ Rmax Radial Profile:  0.18937893911223649       0.48696534353499998       0.37980669738599998     
+ get_halostats.f03 finished.
+ ============================
+ get_halostats.f03 started.
+ ============================
+ Working with parameters:
+     srcdir:                     output_00041
+     halo:                            1727382
+     ncpu:                                288
+     nc:                                 2000
+     nclumps:                          197833
+     interpolation:                       cic
+     levelmin:                              9
+     levelmax:                             20
+     unit_l:                           68.879    [Mpc]
+     a_exp:                             1.000
+     z:                                -0.000
+ Found        2688 child clumps out of       197833 total clumps in snapshot.
+ Reading in particle data. This may take a while.
+ Nparts kept:     2583522 out of   134217728
+ Checking for periodicity corrections.
+ Computing density field 
+ Written file output_00041/density_image_halo-1727382.dat
+ Read in        93575 galaxies with clumps and       247779 orphan galaxies.
+ Total galaxies in snapshot:      341354
+ Sorting out Clump Galaxies
+ Found        89        satellite galaxies with clumps out of     93575    galaxies in snapshot.
+ Sorting out Orphan Galaxies
+ Found      7217               orphan galaxies in halo out of    247779     orphans in snapshot.
+ Rmax Radial Profile:  0.15838634468436322       0.33763534189500000       0.43577913770700000     
+ get_halostats.f03 finished.
+ ============================
+ get_halostats.f03 started.
+ ============================
+ Working with parameters:
+     srcdir:                     output_00041
+     halo:                            4957350
+     ncpu:                                288
+     nc:                                 2000
+     nclumps:                          197833
+     interpolation:                       cic
+     levelmin:                              9
+     levelmax:                             20
+     unit_l:                           68.879    [Mpc]
+     a_exp:                             1.000
+     z:                                -0.000
+ Found        1924 child clumps out of       197833 total clumps in snapshot.
+ Reading in particle data. This may take a while.
+ Nparts kept:     1797635 out of   134217728
+ Checking for periodicity corrections.
+ Computing density field 
+ Written file output_00041/density_image_halo-4957350.dat
+ Read in        93575 galaxies with clumps and       247779 orphan galaxies.
+ Total galaxies in snapshot:      341354
+ Sorting out Clump Galaxies
+ Found        54        satellite galaxies with clumps out of     93575    galaxies in snapshot.
+ Sorting out Orphan Galaxies
+ Found      4966               orphan galaxies in halo out of    247779     orphans in snapshot.
+ Rmax Radial Profile:  0.14764349383790082       0.67148636950300000        4.1191438153399998E-002
+ get_halostats.f03 finished.
+ ============================
+ get_halostats.f03 started.
+ ============================
+ Working with parameters:
+     srcdir:                     output_00041
+     halo:                            3566345
+     ncpu:                                288
+     nc:                                 2000
+     nclumps:                          197833
+     interpolation:                       cic
+     levelmin:                              9
+     levelmax:                             20
+     unit_l:                           68.879    [Mpc]
+     a_exp:                             1.000
+     z:                                -0.000
+ Found        1843 child clumps out of       197833 total clumps in snapshot.
+ Reading in particle data. This may take a while.
+ Nparts kept:     1731254 out of   134217728
+ Checking for periodicity corrections.
+ Computing density field 
+ Written file output_00041/density_image_halo-3566345.dat
+ Read in        93575 galaxies with clumps and       247779 orphan galaxies.
+ Total galaxies in snapshot:      341354
+ Sorting out Clump Galaxies
+ Found        70        satellite galaxies with clumps out of     93575    galaxies in snapshot.
+ Sorting out Orphan Galaxies
+ Found      4830               orphan galaxies in halo out of    247779     orphans in snapshot.
+ Rmax Radial Profile:  0.14387508115055392       0.82958649927200001       0.94968891677400002     
+ get_halostats.f03 finished.

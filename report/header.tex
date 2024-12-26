@@ -1,0 +1,191 @@
+\documentclass[11pt,
+ a4paper, 
+ twopage, 
+ english,
+ singlespacing,
+ noindent
+% parskip
+]{scrartcl}
+
+%\documentclass[
+%11pt, % The default document font size, options: 10pt, 11pt, 12pt
+%oneside, % Two side (alternating margins) for binding by default, uncomment to switch to one side
+%chapterinoneline,% Have the chapter title next to the number in one single line
+%english, % ngerman for German
+%singlespacing, % Single line spacing, alternatives: onehalfspacing or doublespacing
+%draft, % Uncomment to enable draft mode (no pictures, no links, overfull hboxes indicated)
+%nolistspacing, % If the document is onehalfspacing or doublespacing, uncomment this to set spacing in lists to single
+%liststotoc, % Uncomment to add the list of figures/tables/etc to the table of contents
+%toctotoc, % Uncomment to add the main table of contents to the table of contents
+%parskip, % Uncomment to add space between paragraphs
+%nohyperref, % Uncomment to not load the hyperref package
+%headsepline, % Uncomment to get a line under the header
+%]{scrartcl or scrreprt or scrbook} % The class file specifying the document structure
+
+%===================
+% LANGUAGE AND MATH
+%===================
+\usepackage{lmodern} 		% Diese beiden packages sorgen für echte 
+\usepackage[T1]{fontenc}	% Umlaute.
+
+\usepackage{amssymb, amsmath, color, graphicx, float, setspace, tipa}
+\usepackage[utf8]{inputenc} 
+\usepackage[english]{babel}
+
+%===================
+% LINKS
+%===================
+\usepackage[pdfpagelabels,pdfstartview = FitH,bookmarksopen = true,bookmarksnumbered = true,linkcolor = black,plainpages = false,hypertexnames = false,citecolor = black, breaklinks]{hyperref}
+\usepackage{url}
+%\usepackage[dvipsnames]{xcolor}
+
+
+%===================
+% FIGURES, TABLES
+%=================== 
+\usepackage{picins} 		%Gleittext um Grafik. Befehl: parpic. Vorlage siehe unten
+%\usepackage{longtable} 		%Seitenübergreifende Tabelle. Vorlage siehe unten
+\usepackage{caption}
+%\usepackage{subcaption}
+%\usepackage{subfig}
+\usepackage{subfloat}
+\usepackage{rotating}
+\usepackage{multirow}
+
+
+\captionsetup{font={small,sf}, labelfont=bf, format=plain}
+\allowdisplaybreaks % allows page breaks in align/equation environment
+
+\usepackage{array}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+\usepackage{tikz}
+\usepackage{tikzscale}
+
+
+
+
+
+%===================
+% MISC
+%===================
+
+\usepackage{enumitem}
+\setlist{nosep} % or \setlist{noitemsep} to leave space around whole list
+
+
+
+
+
+
+%===================
+% TYPOGRAPHY
+%===================
+\usepackage{fullpage}
+\usepackage{pdflscape} %enable landscape
+
+\usepackage[textheight=247mm,textwidth=160mm]{geometry}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{\bigskipamount}
+
+\usepackage{authblk} % titlepage stuff
+\usepackage[titletoc, title]{appendix}
+
+% Set fonts of document parts
+\setkomafont{title}{\rmfamily\bfseries\boldmath}
+\addtokomafont{section}{\rmfamily\bfseries\boldmath}
+\addtokomafont{subsection}{\rmfamily\bfseries\boldmath}
+\addtokomafont{subsubsection}{\rmfamily\bfseries\boldmath}
+\addtokomafont{disposition}{\rmfamily} % table of contents and stuff
+\setkomafont{descriptionlabel}{\rmfamily\bfseries\boldmath}
+
+%===================
+% BIBLIOGRAPHY
+%===================
+\usepackage[backend=bibtex,sorting=nyt,bibencoding=ascii,citestyle=authoryear]{biblatex}
+\addbibresource{references.bib}
+\usepackage{csquotes} %recommended when using babel and biblatex
+%Abbreviations for Bibliography: http://adsabs.harvard.edu/abs_doc/aas_macros.html
+\newcommand{\aap}{Astronomy and Astrophysics}
+\newcommand{\mnras}{Monthly Notices of the RAS}
+\newcommand{\apj}{The Astrophysical Journal}
+\newcommand{\nat}{Nature}
+
+
+
+
+
+%===============
+%Pseudocode
+%===============
+
+%\usepackage{algorithm}
+%\usepackage[noend]{algpseudocode}
+%\makeatletter
+%\def\BState{\State\hskip-\ALG@thistlm}
+%\makeatother
+
+%--------------------------------------------
+% NEUE BEFEHLE
+%--------------------------------------------
+% Gleich mit Dach obendrauf
+%\newcommand{\entspricht}{\mathrel{\widehat{=}}}
+% Atanh
+%\newcommand {\arctanh}{\mathrm{arctanh}}
+% Acotanh
+%\newcommand{\arccot}{\mathrm{arccot }}
+% Limes von etwas gegen null
+%\newcommand{\limz}[1]{\lim\limits_{#1 \rightarrow 0}}
+%Bold font in math
+%\newcommand{\bm}{\boldmath}
+%\newcommand{\dps}{\displaystyle}
+% e noncursive in math mode
+%\newcommand{\e}{\mbox{e}}
+% partial diff operator
+\newcommand{\del}{\partial}
+%differential d
+\newcommand{\de}{\mathrm{d}}
+
+%\newcommand{\ramses}{\textsc{ramses}}
+%\newcommand{\phew}{\textsc{phew}}
+%\newcommand{\dice}{\textsc{dice}}
+\newcommand{\ramses}{\texttt{RAMSES}}
+\newcommand{\phew}{\texttt{PHEW}}
+\newcommand{\dice}{\texttt{DICE}}
+
+\newcommand{\exc}{\texttt{exclusive}}
+\newcommand{\inc}{\texttt{inclusive}}
+\newcommand{\sad}{\texttt{saddle}}
+\newcommand{\nosad}{\texttt{no saddle}}
+
+\newcommand{\gsmall}{\texttt{G69}}
+\newcommand{\glarge}{\texttt{G100}}
+
+\newcommand{\dt}{\texttt{dice-twobody}}
+\newcommand{\ds}{\texttt{dice-levels}}
+\newcommand{\cosmo}{\texttt{cosmo}}
+\newcommand{\simple}{\texttt{simple}}
+\newcommand{\neigh}{\texttt{neighbours}}
+\newcommand{\iter}{\texttt{iter}}
+\newcommand{\phewon}{\texttt{PHEW only}}
+\newcommand{\msol}{M_\odot}
+
+%--------------------------------------------
+%--------------------------------------------
+%---------OPTIONAL---------------------------
+
+%% Schriftart ändern
+%\newcommand{\changefont}[3]{
+%\fontfamily{#1} \fontseries{#2} \fontshape{#3} \selectfont}
+%\changefont{ppl}{m}{n} nach \begin{document} einsetzen
+
+%% Abb. statt Abbildung, Tab. statt Tabelle
+%\usepackage[footnotesize]{caption2}
+%\addto\captionsngerman{\renewcommand{\figurename}{Abb.}}
+%\renewcommand{\tablename}{Tab.}%
+
+%\pagestyle{headings} % Überschrift an jeder Seite
+
+%\usepackage{chngcntr} \counterwithout{figure}{section} % Ganzzahlige Bildnummerierungen, Kapitelunabhängig
+

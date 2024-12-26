@@ -1,0 +1,69 @@
+\documentclass[11pt]{beamer}
+
+
+\usepackage{lmodern} 		% Diese beiden packages sorgen für echte 
+\usepackage[T1]{fontenc}	% Umlaute.
+
+\usepackage{amssymb, amsmath, color, graphicx, float, setspace, tipa}
+\usepackage[utf8]{inputenc} 
+\usepackage[english]{babel}
+\usepackage[]{caption}
+\addto\captionsenglish{\renewcommand{\figurename}{}} %Abbildungen nicht bzw. anders beschriften.
+\captionsetup{font={small,tt}, labelformat=empty, format=plain}
+
+
+%\usepackage[pdfpagelabels,pdfstartview = FitH,bookmarksopen = true,bookmarksnumbered = true,linkcolor = black,plainpages = false,hypertexnames = false,citecolor = black, breaklinks]{hyperref}
+%\usepackage{url}
+\usepackage{picins} 		%Gleittext um Grafik. Befehl: parpic. Vorlage siehe unten
+\usepackage{longtable} 		%Seitenübergreifende Tabelle. Vorlage siehe unten
+\newtheorem*{bem}{Bemerkung} % Neue Theorem-Umgebung: Bemerkung
+\newcommand{\fillframe}{\vskip0pt plus 1filll} 
+\newcommand{\msol}{M_\odot}
+\newcommand{\gsmall}{\texttt{G69}}
+\newcommand{\glarge}{\texttt{G100}}
+% partial diff operator
+\newcommand{\del}{\partial}
+%differential d
+\newcommand{\de}{\mathrm{d}}
+
+%===================
+% BIBLIOGRAPHY
+%===================
+\usepackage[backend=bibtex,sorting=nyt,bibencoding=ascii,citestyle=authoryear]{biblatex}
+\addbibresource{references.bib}
+\usepackage{csquotes} %recommended when using babel and biblatex
+%Abbreviations for Bibliography: http://adsabs.harvard.edu/abs_doc/aas_macros.html
+\newcommand{\aap}{Astronomy and Astrophysics}
+\newcommand{\mnras}{Monthly Notices of the RAS}
+\newcommand{\apj}{The Astrophysical Journal}
+\newcommand{\nat}{Nature}
+
+
+
+
+%-----------------
+%BEAMER-SPEZIFISCH
+%-----------------
+
+
+\usetheme{metropolis}
+%deactivate a new page when a new section begins
+\metroset{sectionpage=none} 
+\usepackage{FiraSans}
+\usefonttheme[onlymath]{serif}
+
+
+% Verschiedene Varianten von usetheme, usecolortheme und usefonttheme kann man hier ausprobieren: http://deic.uab.es/~iblanes/beamer_gallery/
+
+
+%Halbtransparente Overlays (was als nächstes Element auf der Folie gezeigt wird)
+%\setbeamercovered{transparent} 
+
+% Entfernt Navigationssymbole unten
+%\beamertemplatenavigationsymbolsempty 
+
+% Seitenzahlen als links
+%\setbeamertemplate{footline}[frame]  
+%    \setbeamertemplate{footline}{%
+%    	\raisebox{5pt}{\makebox[\paperwidth]{\hfill\makebox[10pt]{\hyperlink{tableofcontents}{\scriptsize\insertframenumber}}}}}
+

@@ -1,0 +1,27 @@
+\begin{table}[ht]
+	\begin{center}
+		{\small 
+		\begin{tabular}[c]{l | p{1cm} | p{1cm} | p{1cm} | p{1cm} | p{1cm} | p{1cm} | p{1cm} |}
+			$n_{mb}=$								&	1 		& 	10 		& 	50 		& 	100 	& 200 	& 500 	& 1000  \\
+			\hline	
+			trees pruned from tree catalogue		&	33924	&	23091	&	22146	& 	22131 	& 22130 & 22129 & 22129 \\	
+	%
+			highest particle number of a LIDIT		&	1369	&	236		&	236		&	236 	& 236 	& 157 	& 157  	\\	
+	%
+			median particle number of a LIDIT		&	19		&	20		&	20		&	20 		& 20 	& 20 	& 20  	\\
+	%
+			LIDITs with >100 particles pruned 		&	513		&	42		&	32		&	26 		& 25 	& 24 	& 24  	\\
+    %
+            total number of jumpers                 &  20176    &   20905   &   22074   &   22041   & 20970 & 19307 & 18249 \\
+			\hline
+		\end{tabular}
+		}
+	\caption{
+		Trees pruned from the merger tree catalogue for varying numbers of clump tracer particles $n_{mb}$ throughout all snapshots. 
+		``LIDIT'' is an abbreviation of ``last identifiable descendant in tree''. 
+		For LIDITs no further descendants could be identified throughout the simulation and consequently their tree was pruned from the merger tree catalogue.
+        A ``jumper'' refers to a clump that has been merged into another clump at some snapshot, but re-emerged at a later snapshot, like shown in figure \ref{fig:jumper-demo}.
+		}
+	\label{tab:ntracers-pruning}
+	\end{center}	
+\end{table}

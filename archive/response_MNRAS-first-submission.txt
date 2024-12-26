@@ -1,0 +1,336 @@
+> Comments to the Author
+> Referees report on "ACACIA: a new method to produce on-the-fly merger trees in
+> the RAMSES code" by Mladen Ivkovic and Romain Teyssier
+> 
+> I recommend major revision of this paper.  However, the authors should
+> consider withdrawing the paper, as I fear that major revision might lead to 
+> a lot of work only for rejection at a later stage.  The paper introduces a 
+> new way of creating merger trees, which is potentially useful for galaxy 
+> formation modelling, but there are no new scientific results as such in it.  
+> Were the new way of doing merger trees to prove much more effective than 
+> other methods then I think that it would be appropriate to publish in MNRAS 
+> - that has not been demonstrated in the current version of the paper and in 
+> fact, as I explain below, it seems to perform significantly worse.
+
+    The paper has undergone a major revision. Almost all sections were
+    rephrased, we added and overall improved the analysis of the merger tree 
+    algorithm, and added a new application of the trees to verify our results. 
+    Our algorithm work on-the-fly, in parallel, and uses orphan galaxies to 
+    establish links between progenitor and descendant haloes across non-adjacent 
+    snapshots efficiently both speed-wise and memory-wise. Most other merger 
+    tree codes can't offer all these features.
+    As for its performance, the analysis we provided at the time of first
+    submission was leaning heavily on the methods that the Merger Tree Comparison
+    project employed, but it was not intended to reproduce their analysis
+    exactly. Instead, the goal was to determine the quality of our trees
+    depending on parameters which influence the merger trees. This intention
+    still remains in the main body of our manuscript, however we have now added
+    an appendix where we reproduce the conditions that were used in the Merger
+    Tree Comparison Project as closely as possible. We compare our results 
+    directly to other halo finders and merger tree algorithms, and find that our
+    results are comparable with the results of multiple other codes, and are not
+    at all worse.
+
+> 1) The purpose of this paper is unclear.  The title and abstract emphasise 
+> the merger tree aspect and indeed that is the only new part of the paper.  
+
+    The merger tree algorithm is indeed the purpose of this paper. Nonetheless,
+    both the abstract and the introduction have been re-written and state the
+    purpose of the paper clearly now.
+
+> A description and testing of this algorithm is contained in Section 3.  But 
+> Sections 2 and 4 are devoted to a description of the PHEW halo finding 
+> algorithm (that has been fully described in an earlier paper, Blueler etal 
+> 2015) and the galaxy catalogues that result by populating with the Behroozi 
+> etal (2013c) scheme to relate halo to stellar mass.  These are not new or 
+> interesting in themselves: I think that the purpose of their inclusion must 
+> be to demonstrate that the halo mass history can be used to measure the peak 
+> halo mass for subhalos, along their merger history, and that this then gives 
+> reasonable results for the stellar mass function and correlation functions.  
+> However, this is very indirect: the Behroozi method relies on applying fitting 
+> formulae to halos and merger histories from the Bolshoi simulations.  
+> Also, there is no direct comparison made between the predictions from this 
+> paper and those in Behroozi etal., so it is hard to judge success.
+
+    We agree that the demonstration as it was at first submission, is indeed 
+    indirect for the stellar mass functions.  As the referee noted, the 
+    Behroozi method relies on applying fitting formulae to halos from a 
+    different set of simulations and halo catalogues. For this reason, we 
+    first showed that we obtain reasonable stellar mass functions with the 
+    Behroozi method in our simulation set, which is obtained using different 
+    methods, halo finders, cosmology, etc. However, the observed stellar mass 
+    functions that we compared our results to are the same ones that have been 
+    used to fit the parameters in the Behroozi et al. paper, hence the "ideal" 
+    in some sense. By obtaining results close to the observed stellar mass 
+    functions that have been used to calibrate the Behroozi et al. method we 
+    wanted to show that we indeed can use the Behroozi method on our simulation
+    set, and derive further observables from it.
+
+    However, the stellar mass functions are indeed not a test of the merger 
+    trees, as they only rely on the halo mass functions. For this reason, our 
+    approach was to then compare other observable quantities derived from our 
+    mock galaxy catalogues with observed data, in our case with the correlation 
+    function. The mock galaxy catalogues rely heavily on the merger trees in two
+    aspects:
+    1)  The subhalo masses used to obtain the satellite galaxies are peak masses 
+        during the subhalo's formation history
+    2)  The merger trees allow us to introduce and track orphan galaxies and to 
+        assign them a stellar mass.
+
+    In the current version of the paper, we omitted the stellar mass functions, 
+    but instead added radial number density and mass density profiles of galaxy 
+    clusters. While we don't show what happens if we don't use the peak masses 
+    of subhaloes, we do differentiate between results when orphan galaxies are 
+    added to the mix, and when they are excluded. In both the correlation 
+    function and the cluster profiles, we obtain much better results when 
+    orphan galaxies are included. In our eyes, that is a success.
+
+
+
+> 2) There was a major study comparing merger tree algorithms and coming up 
+> with a number of tests for their effectiveness, the Sussing Merger Tree 
+> project (Srisawat etal 2013, hereafter SMT13).  The authors acknowledge that 
+> and try to reproduce some of the results, but they do it with their own dark 
+> matter simulation (of similar but not identical properties).  As the data for 
+> SMT13 is public (seehttp://popia.ft.uam.es/SussingMergerTrees/Data.html) I can 
+> see no reason why a direct comparison cannot be made.
+
+    For the purpose of directly comparing ACACIA to other merger tree codes, 
+    ideally ACACIA should be tested on the same datasets and halo catalogues 
+    that have been used in the Merger Tree Comparison Project papers, 
+    Srisawat+13 and Avila+14. However, ACACIA was designed to work on the fly; 
+    Using it as a post-processing utility would defeat its purpose. It is not,
+    nor has it ever been, intended to be used as a standalone merger tree tool. 
+    Furthermore, using foreign halo catalogues has proven to be technically 
+    impossible.  It is not necessarily compatible with other halo finder's
+    definitions and conventions of halos, subhalos, or their hierarchies.
+    And lastly, we also want to demonstrate that the halo finder PHEW can be 
+    used to produce reliable merger trees. 
+    However, the results we show have not been intended for exact direct
+    comparison with the results of the Comparison Project. The main purpose was
+    to identify what parameters that ACACIA uses would yield the most reliable 
+    merger trees. So instead, we perform the tests on our own datasets and halo 
+    catalogues, described in Section 5.
+
+    Nonetheless, to enable comparison to other halo finders and merger tree codes, 
+    some of the tests have been performed using the exact same selection 
+    criteria as they were in the Comparison Project, and the results are given 
+    in appendix B. The results are comparable to e.g. the Sublink and VELOCIraptor 
+    tree builders with AHF or Subfind halo finders in Avila et al. (2014), 
+    demonstrating that ACACIA performs adequately well as its peers.
+
+
+> 3) The main new idea in this paper is a new algorithm to link halos between 
+> snapshots.  It tries to ensure that every halo at one snapshot has a 
+> progenitor in the previous one (or failing that, from halos in previous steps 
+> that have become 'lost').  The idea is a neat one, but unfortunately it seems 
+> to result in poor behaviour with much greater mass fluctuations and extreme 
+> events (usually attributable to mis-matches between halos).  Comparing Figure 
+> 4 with the equivalent ones (Figures 10 and 11) in SMT13 is not completely 
+> straightforward, but seems to me to show the following: (i) The logarithmic 
+> mass growth curve shows MANY more extreme drops in mass than in SMT13, even 
+> when the strictly bound condition is imposed; (ii) the mass growth 
+> fluctuations histogram is also much broader than in SMT13: in the latter it 
+> drops by 2 dex from the peak out to ±0.65, whereas in the ACACIA method it 
+> drops by only about 2/3 dex.
+
+    With the exact same criteria applied, the results are much closer now. Also, 
+    a more fair comparison would be to compare ACACIA to the properties in 
+    Avila+14 instead of SMT13, since there the influence of the halo finders is 
+    also taken into account. A detailed comparison is given in appendix B now.
+
+
+> If the authors do argue for major revision then the following comments should 
+> also be taken into account:
+> 
+> 4) The introduction is far too long and tries to give a history of dark matter 
+> halo detection, semi-analytic modelling, etc., that is not relevant.  It 
+> should be much shortened and concentrate only on those aspects relevant to 
+> the paper.  Also the introduction should state clearly what the aims of the 
+> paper are, which it currently does not.
+
+    The introduction has been adapted with this critique in mind.
+ 
+ 
+ 
+> 5) Similarly, Section 2 consists entirely of material that has appeared in 
+> previous papers and which is not directly relevant to the current one.  2.1 
+> PHEW is well described in previous work.  It should be explained how one goes 
+> from cells to particles, but otherwise no need to repeat. 2.2 can be much 
+> shortened. Although I know what Fig 1 is supposed to be showing, I found it 
+> more confusing than illuminating; only equation (4) is really needed.  2.3 
+> Perhaps useful to repeat the Behroozi formula here, but could just as easily 
+> refer to the original paper.
+
+    While it is true that PHEW has been described in detail in a previous paper,
+    a rudimentary description of the way it works is necessary. The particle
+    unbinding methods for PHEW are new and haven't been published, and the way
+    that PHEW establishes hierarchies between substructure plays an important
+    role for the particle unbinding methods: Unbound particles of substructure
+    is being passed on to parent clumps for checking. Finally, we found that the
+    definition of what particle is to be considered bound to a clump or not has
+    an effect on the quality of merger trees, and we need to talk about the
+    unbinding methods in order to discuss their influence on the merger trees.
+
+
+
+> 6) How is it possible for the maximum number of particles in a clump to be 
+> larger for the 'strictly bound' than for the 'loosely bound' version of the 
+> model?
+
+    The particle unbinding is performed following the structure hierarchy as 
+    found by PHEW from the bottom up. Starting with the lowest level 
+    substructure, i.e. the finest subhaloes present, unbound particles are 
+    first assigned to the next higher level parent structure for checking, 
+    and then passed on following the structure hierarchy. Once the main halo 
+    level is reached, all present particles are assumed to be part of it, 
+    regardless whether any of the previously mentioned conditions is satisfied.
+    This way, when more particles are unbound from lower level structures, 
+    the main halo clumps can have more particles. 
+
+    (However, the maximal number of particles in a halo was part of an earlier 
+    analysis that has been omitted from the paper, and as such is not necessary 
+    to be mentioned as part of the analysis in the paper any more and has been 
+    removed.)
+
+
+
+
+> 7) Is having more progenitor clumps necessarily better?  Can this be 
+> justified?
+
+    I am not certain in which context this is meant.
+    Using the strictly bound particle unbinding criterion leaves subhaloes with
+    smaller masses, meaning that more progenitor clumps loose too much mass to
+    satisfy the mass threshold to be considered "proper clumps" and are removed 
+    from the catalogue. In this context, having more progenitor clumps because 
+    the loosely bound unbinding criterion isn't used is not a good thing, since
+    evidently using the stricly bound criterion gives much more robust results.
+    It could also have been meant in the context of our findings that with
+    increasing number of tracer particles $n_{mb}$, the number of 
+    progenitor-descendant links across non-adjacent snapshots increases; But 
+    since the halo catalogues are identical in those cases, it must mean that 
+    we have found more progenitor candidates with increasing $n_{mb}$. 
+    We consider the linking of progenitor-descendant pairs over non-adjacent 
+    snapshots as the less preferrable method, because the links are established 
+    using only one particle that is expected to be in a volatile environment. 
+    (Indeed using $n_{mb}$=1 leads to quite bad results.) So within this 
+    context, having more progenitor candidates is a preferrable predicament to 
+    be in. 
+
+
+> 8) Explain the spikes seen in Figure 6 (may be due to discrete particle 
+> numbers in low-mass halos).
+
+    This was indeed due to the discrete particle numbers and the application of 
+    the arctan() to reduce the values within a finite range. The spikes are also
+    present in the reference papers Srisawat+13 and Avila+14, albeit not this
+    pronounced.
+
+
+
+> 9) The argument in Section 3.4 that minimising the number of jumpers by 
+> increasing $n_{mb}$ is a good thing is not entirely obvious.  It seems to 
+> me that by allowing relatively more loosely bound tracers (although still 
+> 'strictly bound' by the definition of this paper) could lead to more 
+> erroneous identifications and hence contribute to the large mass fluctuations 
+> that are seen.
+
+    Jumpers, or links between progenitors and descendants across non-adjacent
+    snapshots using one tracer "orphan" particle, in general are a less 
+    reliable way of linking progenitors to descendants than using a multitude 
+    of particles between two snapshots.
+    Using jumpers corresponds to tracing a clump using only one particle, 
+    but over larger time intervals than between two adjacent snapshots.
+    It's reasonable to expect that a lot can happen to a single particle 
+    over large times, particularly so within host clumps. Since orphan tracer 
+    particles are only introduced once a clump has been merged into another, 
+    the orphan tracer particles will most likely start their life out in 
+    volatile environments. Hence not using jumpers should be preferred way of 
+    linking progenitors and descendants.
+
+
+
+> 10) If $n_{mb}=100-200$ is a good compromise between computational efficiency 
+> and good results, then how can you justify going down to clump masses of 10 
+> particles?  Surely those don't give good results.
+
+    The issue is more related to how many particles are needed for a clump to be
+    well resolved. We indeed found that going below 100-200 particles doesn't
+    give good results, but that is not directly related to the merger tree 
+    algorithm.
+
+    In the current version of the paper, in almost all analyses we either separate 
+    the clumps in groups by particle number, or exclude low particle clumps.
+
+
+
+> 11) I did not find Section 3.5 particularly helpful.  Section 3.5.1 seems to 
+> simply tell me about dynamical friction, which is well known; Section 3.5.2 
+> talks about possible improvements to the MPI algorithm that seem out of place 
+> in this paper and of little use to the reader.
+
+    This Section has been removed.
+    
+    
+
+> 12) As I said already, I am not sure that Section 4 is providing a 
+> particularly rigorous test of the ACACIA merger tree method.  
+
+    We agree that it is not a particularly rigorous test, we see it more as a
+    proof of concept. The tests of the merger trees were performed in section 4
+    of the current verion of the paper (previously Section 3).
+
+
+
+> Here are some more specific comments.  Section 4.1 -- I don't see the need 
+> for a basic primer on correlation functions; this is well known.  
+    
+    Some introductory text has been removed. However, I think keeping the 
+    remaining equations is important, as they describe the method used to 
+    compute the correlation function. I.e. we do it via Fourier transform, 
+    as opposed to counting pairs, which is another popular way of computing 
+    correlation functions.
+
+
+
+> Section 4.3 -- I find it very hard from Figure 8 to tell if the ACACIA merger
+> tree algorithm is working well or not, as there is no comparison to other 
+> methods.  Rather than having 23 different redshifts, it would be more helpful 
+> to show the effect of the merger tree implementation on the results: e.g. 
+> compare the SMF with and instantaneous measure of the subhalo mass (perhaps 
+> using max circular speed of the subhalo as a proxy) with that using the mass 
+> obtained from the merger tree.  Even better would be to compare with other 
+> merger tree methods, if those could be coded easily.  
+
+    The effect of the merger tree is not visible at this point. The stellar 
+    mass functions are computed using central galaxies only, and those depend 
+    on the current main halo masses only. As explained above, the stellar mass
+    functions were not intended to be a measure of quality of the merger trees,
+    but to demonstrate that the halos that we find can indeed be used to apply
+    the SMHM relation to obtain reasonable SMFs.
+    In any case, the SMFs have now been removed from the paper in favour of
+    radial profiles of galaxy clusters.
+
+
+
+> Section 4.4 -- Similar comments.  The correlation function will be a function 
+> of the selection function for the galaxies which is not really explained in 
+> the paper -- I presume that it uses all the galaxies from the model.  It is 
+> not at all surprising that including or excluding orphans makes a big 
+> difference.  From the point of view of this paper, we would need to see what 
+> effect the merger tree has and that will be very indirect in affecting the 
+> subhalo maximum mass estimate that goes into the Behroozi fitting formula.
+
+    This point has been clarified better in the text. The effect of the merger 
+    trees is both to use the peak mass of subhaloes to find the satellite galaxy 
+    mass, as well as to introduce, track, and assign a mass to orphan galaxies.
+    We highlight the contributions of the merger trees by differentiating
+    between the cases where orphan galaxies are included and where they are
+    excluded.
+
+> 13) In the appendix, it is a little confusing that Step (ii) (also called 
+> Step 2) is described before Step (i), especially as the long descriptions of
+> the steps are not themselves given identifying labels.
+    
+    The appendix (now appendix A) has been improved.

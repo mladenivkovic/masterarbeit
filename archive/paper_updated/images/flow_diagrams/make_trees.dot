@@ -1,0 +1,138 @@
+digraph G {
+    // compound=true; // Needed to connect subgraphs
+
+    ranksep=0.52;
+    nodesep=0.15;
+
+    node [shape = rect, style=rounded; penwidth=2;];
+    rankdir = TB;
+    
+    // subgraph clusterMerit{
+    //     find_prog_merit [label="Each descendant: Compute merit function for each of its progenitor candidates."];
+    //     find_desc_merit [label="Each progenitor: Compute merit function for each of its descendant candidates."];
+    //     empty1 [label="", shape="plaintext"];
+    //
+    //     {
+    //         rank = same;
+    //         // Here you enforce the desired order with "invisible" edges and arrowheads
+    //         edge [style=invis];
+    //         find_prog_merit -> empty1 -> find_desc_merit;
+    //         rankdir = LR;
+    //     }
+    // }
+
+    // subgraph clusterMainCandidate {
+    //     find_main_prog [label="Each descendant: Find main progenitor candidate: The candidate with highest merit."];
+    //     find_main_desc [label="Each progenitor: Find main descendant candidate: The candidate with highest merit."];
+    //     empty2 [label="", shape="plaintext"];
+    //
+    //     {
+    //         rank = same;
+    //         // Here you enforce the desired order with "invisible" edges and arrowheads
+    //         edge [style=invis];
+    //         find_main_prog -> empty2 -> find_main_desc;
+    //         rankdir = LR;
+    //     }
+    // }
+
+    start [label="Find all descendant candidates for\neach progenitor and all progenitor\ncandidates for each descendant and\ncompute their merits."]
+    tree_loop_top [label="Are there descendants that have progenitor\ncandidates and no true main progenitor (yet)?"];
+    start -> tree_loop_top;
+    end [label = "The merger trees are complete.\nWrite the results to file."];
+
+    {
+        // DESCENDANT LOOP NODES
+
+        node [color = red; fonstize=36.0;];
+
+        // desc_loop [label="Loop over these descendant clumps:\nHas this descendant checked all\nits progenitor candidates before?"];
+        desc_loop [label="Loop over these descendant clumps.\nIs this the first iteration of this loop?"];
+        desc_discard_main [label="Discard the current main progenitor\ncandidate from the list of progenitor\ncandidates of this descendant."];
+        desc_use_next_prog [label="Set the progenitor candidate with\nthe highest merit as main progenitor\ncandidate of this descendant."]
+        // continue_desc_loop [label="Continue with next\n descendant in loop", shape="plain", fontcolor=red];
+    }
+    {
+        // PROGENITOR NODES
+
+        node [color="blue3"];
+        prog_loop [label="Loop over each progenitor:"];
+        prog_do [label="Does this progenitor have\nany descendant candidates?"];
+        prog_dissolved [label="Mark it as dissolved."];
+        is_match [label="Is this progenitor the main \nprogenitor candidate of its \nmain descendant candidate?"];
+        end_loop [label="Mark this progenitor as the true\nmain progenitor of its main\ndescendant and vice versa."];
+        does_progenitor_have_descendants_left [label="Does this progenitor have\nanother descendant candidate?"];
+        move_to_next_main_desc [label="Set the descendant candidate with the\nnext highest merit as this progenitor's\nmain descendant candidate"];
+
+        continue_prog_loop [label="Continue with next\n progenitor in loop", shape="plain", fontcolor=blue3];
+        {rank = same; prog_do; continue_prog_loop;}
+    }
+    {
+        // MERGE/FINISH NODES
+
+        node [color = forestgreen];
+
+        merge_loop [label="Are there progenitors that\nhave descendant candidates\n and no true main descendant?"];
+        merge_progenitors [label = "Mark these progenitors as\nmerged into their respective\nmain descenant candidate."];
+        newly_formed [label = "Are there descendants with\nno main progenitors?"];
+        desc_has_pmprogs [label = "Do some of these descendants\ncontain orphan particles?"];
+        find_best_pmprog [label = "Find the most tightly bound\norphan particle in the descendant\nclump, if it exists. Then mark\nthe descendant as having a\nprogenitor in a non-adjacent\nsnapshot. Otherwise, mark the\ndescendant as newly formed."];
+        desc_is_new [label = "Mark these descendants\nas newly formed"];
+    }
+    {
+        // UNCOLORED EDGES
+
+        node [color = black];
+        edge [color = black];
+        // empty1 -> empty2;
+        // empty2 -> tree_loop_top;
+        tree_loop_top -> desc_loop [label="yes"];
+        tree_loop_top -> merge_loop [label="no"];
+    }
+    {
+        // DESCENDANT LOOP EDGES
+        
+        edge [color = red; fontcolor = red];
+        desc_loop -> desc_discard_main [label = "no"];
+        desc_loop -> desc_use_next_prog [label = "yes"];
+        desc_discard_main -> desc_use_next_prog;
+        // desc_use_next_prog -> continue_desc_loop;
+        // continue_desc_loop -> desc_loop;
+        desc_use_next_prog -> prog_loop [label = "end of loop"];
+
+    }
+    {
+        // PROGENITOR EDGES
+
+        edge [color="blue3", fontcolor="blue3"];
+
+        prog_loop -> prog_do;
+        prog_do -> is_match[label="yes"];
+        prog_do -> prog_dissolved[label="no"];
+        prog_dissolved -> continue_prog_loop;
+        is_match -> end_loop [label="yes"];
+        end_loop -> continue_prog_loop;
+        is_match -> does_progenitor_have_descendants_left [label="no"];
+        does_progenitor_have_descendants_left -> move_to_next_main_desc [label="yes"];
+        does_progenitor_have_descendants_left -> continue_prog_loop [label="no"];
+        move_to_next_main_desc -> is_match;
+        continue_prog_loop -> prog_do;
+        continue_prog_loop -> tree_loop_top [label="end of loop"];
+    }
+    {
+
+        // MERGING/FINISHING EDGES
+
+        edge [color = forestgreen, fontcolor=forestgreen];
+
+        merge_loop -> newly_formed [label = "no"];
+        merge_loop -> merge_progenitors [label="yes"];
+        merge_progenitors -> newly_formed;
+        newly_formed -> end [label="no"];
+        newly_formed -> desc_has_pmprogs [label = "yes"];
+        desc_has_pmprogs -> desc_is_new [label  = "no"];
+        desc_is_new -> end;
+        desc_has_pmprogs -> find_best_pmprog [label = "yes"];
+        find_best_pmprog -> end;
+    }
+    
+}

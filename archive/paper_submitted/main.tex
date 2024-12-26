@@ -1,0 +1,192 @@
+\pdfoutput=1 %for arxiv
+% Header for MNRAS template
+% v3.0 released 14 May 2015
+% (version numbers match those of mnras.cls)
+%
+% Copyright (C) Royal Astronomical Society 2015
+% Authors:
+% Keith T. Smith (Royal Astronomical Society)
+
+% Change log
+%
+% v3.0 May 2015
+%    Renamed to match the new package name
+%    Version number matches mnras.cls
+%    A few minor tweaks to wording
+% v1.0 September 2013
+%    Beta testing only - never publicly released
+%    First version: a simple (ish) template for creating an MNRAS paper
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Basic setup. Most papers should leave these options alone.
+\documentclass[a4paper,twocolumn,fleqn,usenatbib]{mnras}
+% MNRAS is set in Times font. If you don't have this installed (most LaTeX
+% installations will be fine) or prefer the old Computer Modern fonts, comment
+% out the following line
+%\usepackage{newtxtext,newtxmath}
+% Depending on your LaTeX fonts installation, you might get better results with one of these:
+%\usepackage{mathptmx}
+%\usepackage{txfonts}
+
+% Use vector fonts, so it zooms properly in on-screen viewing software
+% Don't change these lines unless you know what you are doing
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+\usepackage{caption}
+
+
+%%%%% AUTHORS - PLACE YOUR OWN PACKAGES HERE %%%%%
+
+% Only include extra packages if you really need them. Common packages are:
+\usepackage{graphicx}	% Including figure files
+\usepackage{amsmath}	% Advanced maths commands
+\usepackage{amssymb}	% Extra maths symbols
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%% AUTHORS - PLACE YOUR OWN COMMANDS HERE %%%%%
+
+% Please keep new commands to a minimum, and use \newcommand not \def to avoid
+% overwriting existing commands. Example:
+%\newcommand{\pcm}{\,cm$^{-2}$}	% per cm-squared
+
+
+
+
+
+% Gleich mit Dach obendrauf
+%\newcommand{\entspricht}{\mathrel{\widehat{=}}}
+% Atanh
+%\newcommand {\arctanh}{\mathrm{arctanh}}
+% Acotanh
+%\newcommand{\arccot}{\mathrm{arccot }}
+% Limes von etwas gegen null
+%\newcommand{\limz}[1]{\lim\limits_{#1 \rightarrow 0}}
+%Bold font in math
+%\newcommand{\bm}{\boldmath}
+%\newcommand{\dps}{\displaystyle}
+% e noncursive in math mode
+%\newcommand{\e}{\mbox{e}}
+% partial diff operator
+\newcommand{\del}{\partial}
+%differential d
+\newcommand{\de}{\mathrm{d}}
+
+%\newcommand{\ramses}{\textsc{ramses}}
+%\newcommand{\phew}{\textsc{phew}}
+%\newcommand{\dice}{\textsc{dice}}
+\newcommand{\ramses}{\texttt{RAMSES}}
+\newcommand{\phew}{\texttt{PHEW}}
+\newcommand{\dice}{\texttt{DICE}}
+
+\newcommand{\exc}{\texttt{exclusive}}
+\newcommand{\inc}{\texttt{inclusive}}
+\newcommand{\sad}{\texttt{strictly bound}}
+\newcommand{\nosad}{\texttt{loosely bound}}
+
+\newcommand{\gsmall}{\texttt{G69}}
+\newcommand{\glarge}{\texttt{G100}}
+
+\newcommand{\dt}{\texttt{dice-twobody}}
+\newcommand{\ds}{\texttt{dice-levels}}
+\newcommand{\cosmo}{\texttt{cosmo}}
+\newcommand{\simple}{\texttt{simple}}
+\newcommand{\neigh}{\texttt{neighbours}}
+\newcommand{\iter}{\texttt{iter}}
+\newcommand{\phewon}{\texttt{PHEW only}}
+\newcommand{\msol}{M_{\sun}}
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%% TITLE PAGE %%%%%%%%%%%%%%%%%%%
+
+% Title of the paper, and the short title which is used in the headers.
+% Keep the title short and informative.
+\title[ACACIA]{{ACACIA}: a new method to produce on-the-fly merger trees in the RAMSES code }
+
+% The list of authors, and the short list which is used in the headers.
+% If you need two or more lines of authors, add an extra line using \newauthor
+\author[Mladen Ivkovic]{
+    Mladen Ivkovic,$^{1}$$^{2}$\thanks{E-mail: mladen.ivkovic@epfl.ch}
+    Romain Teyssier$^{3}$
+    \\
+    % List of institutions
+    $^{1}$Laboratoire d'Astrophysique, \'Ecole Polytechnique F\'ed\'erale de Lausanne, 1290 Versoix, Switzerland\\
+    $^{2}$Observatoire de Gen\`eve, Universit\'e de Gen\`ve, Chemin Pegasi 51, 1290 Versoix, Switzerland\\
+    $^{3}$Institute for Computational Science, University of Zurich, 8057 Zurich, Switzerland\\
+}
+
+% These dates will be filled out by the publisher
+\date{Accepted XXX. Received YYY; in original form ZZZ}
+
+% Enter the current year, for the copyright statements etc.
+\pubyear{2021}
+
+
+
+
+
+
+% Don't change these lines
+\begin{document}
+    \label{firstpage}
+    \pagerange{\pageref{firstpage}--\pageref{lastpage}}
+    \maketitle
+    
+    \input{./tex/abstract}
+    
+    % Select between one and six entries from the list of approved keywords.
+    % Don't make up new ones.
+    \begin{keywords}
+    	methods: numerical -- galaxies: evolution -- galaxies: haloes -- dark matter
+    \end{keywords}
+    
+
+     
+    
+    
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%% BODY OF PAPER %%%%%%%%%%%%%%%%%%
+    
+    
+    \input{./tex/introduction}
+    \input{./tex/from-halofinding-to-mocks}
+    \input{./tex/mergertree_algorithm}
+    \input{./tex/mergertree_testing}
+    \input{./tex/SHAM_testing}
+    \input{./tex/conclusion}       
+       
+       
+       
+       
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%% REFERENCES %%%%%%%%%%%%%%%%%%
+
+    % The best way to enter references is to use BibTeX:
+    
+    \bibliographystyle{mnras}
+    \bibliography{references} % if your bibtex file is called references.bib
+    
+    \appendix
+   	\input{./tex/appendix}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   	
+  	
+	% Don't change these lines
+	\bsp	% typesetting comment
+	\label{lastpage}
+\end{document}

@@ -1,0 +1,108 @@
+====================================
+Merger Trees Algorithm Outline
+====================================
+
+
+
+
+=============
+Main Idea
+=============
+
+
+- Track progenitors by particles
+- Progenitors are central or satellite haloes, so work on a "subhalo basis"
+- Find progenitors for all descendants
+- Find main progenitor through some merit function
+    - link them if there are no problems
+    - others: are merged or exception handling
+
+
+
+
+
+Options:
+
+    Particle Tracking:
+=>  1) Only take fixed amount of particles (e.g. 10-250)
+    2) Take all bound particles (exclusively bound considering neighbouring structures)
+
+
+    Merit function:
+    1) max {N_prog_in_desc} out of all descendants
+=>  2) max {N_prog_in_desc/N_desc} out of all descendants
+    3) min { 1/N_prog_in_desc * sum_{i = 1}^{N_prog_in_desc} (r_i - r_com_desc)  } 
+        (minimal average halocentric distance of progenitor particles)
+
+
+    Exception handling:
+    1) What if there is no progenitor for an identified subhalo?
+        1.1) If subhalo is a central/main halo:
+            No problems, we got a new halo.
+        1.2) If subhalo is a satellite halo:
+            How did that happen? Assuming hierarchical structure formation, satellite haloes should
+            always have a progenitor. So this shouldn't be a subhalo. 
+            (requirement for subhalo identification used in BHT)
+            => throw it away.
+
+    2) What if there multiple progenitors for a descendant?
+=>     2.1) Check a timestep later whether there is an unique main descendant
+            If yes: Skip a step
+            If no:  Merge
+
+        2.2) Implement a phase space group finder
+            Try to find subhaloes within descendant based on phase space instead of space only
+            If you find any:
+                Repeat search for progenitors with new subhaloes recursively until either
+                each subhalo has unique descendant or has been merged
+            Else:
+                Assume progenitors merged into descendant
+            
+
+        2.3) Assume they merged without checking
+
+
+
+
+
+
+
+
+
+Assuming 2 "snapshots" A and B, where t(A) < t(B)
+
+At timestep A:
+================
+Track 10-250 most bound particles for each 
+
+
+At timestep B:
+================
+For each progenitor:
+    Find descendant candidates: N(A intersect B) > 0
+        (number of tracked progenitor particles in all descendant particles)
+    Find direct descendant: max {N(A intersect B_i)/N(B_i)}
+        where i are all the descendant candidates
+        (it favours subhalos of smaller mass)
+    If there is no descendant:
+        ?????
+
+For each descendant:
+    Find progenitor candidates: N(A intersect B) > 0
+    Find main progenitor: max{ N(A_i intersect B) }
+        where i are all the candidates
+
+    If there are >1 progenitor candidates:
+        Do phase space separation. Assume overlapping subhalos; Basically do ROCKSTAR and try to find new subhalos
+        If N_Groups > N_progs:
+            merge groups until N_Groups = N_progs
+            Then introduce new subhalos and adapt properties of old subhalo based on found groups
+        If N_Groups < N_progs:
+            Assume progenitors merged into group with max{N_A intersect B_group_i}
+        If/when N_Groups == N_progs:
+             Assign progenitor based on max {N(A intersect B) / N(B)}
+
+
+
+
+

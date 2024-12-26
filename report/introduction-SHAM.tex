@@ -1,0 +1,82 @@
+%=========================================================================================
+\subsection{Creating Mock Galaxy Catalogues from Dark Matter Simulations}\label{chap:creating_mock_galaxies}
+%=========================================================================================
+
+
+Once merger trees from DMO simulations are available, the only missing link to obtain mock galaxy catalogues is a galaxy-halo connection.
+Various approaches have been used to establish such a connection.
+\cite{wechsler_connection} distinguish between ``\textit{two basic approaches to modeling the galaxy-halo connection, \emph{empirical modeling}, which uses data to constrain a specific set of parameters describing the connection at a given epoch or as a function of time, and \emph{physical modeling}, which either directly simulates or parametrizes the physics of a galaxy formation such as gas cooling, star formation, and feedback.}''
+The models are not mutually exclusive:
+Starting from a hydrodynamical simulation as an example of a very physical model, where dark matter, gas, and star formation processes are directly simulated (e.g. \cite{EAGLE}), some assumptions may be relaxed and constrained by data instead.
+Semi-analytic models (e.g. \cite{SA-white}, \cite{SA-durham}, \cite{SA-Somerville}, \cite{SA-Kaufmann}) for example approximate some processes with analytical prescriptions, however parameters of these prescriptions need to be constrained empirically with observational data.
+Physical models are in general computationally more expensive, making them less suitable to be used on the fly.
+
+Broadly speaking, empirical models of the galaxy-halo connection make no effort to explain the physical processes governing galaxy formation, but are mainly concerned with constraining a prescription of galaxy properties given a halo catalogue.
+The Halo Occupation Density (HOD) model (e.g. \cite{HOD-Seljak}, \cite{HOD-Berlind}) for example specifies the probability distribution of the number of galaxies that meet some criteria like a luminosity or stellar mass threshold in a halo, typically depending on its mass. 
+%Commonly the probability distribution functions for central and satellite galaxies are given separately.
+Conditional Luminosity Functions (e.g. \cite{CLF}) and Conditional Stellar Mass Functions (e.g. \cite{CSMF}) go one step further and describe the full distribution of galaxy luminosities or masses for a given halo mass. 
+
+Other empirical models make the assumption that the most massive galaxies live in the most massive haloes and then rank-order galaxies from observations by mass (or some other property) with dark matter (sub)haloes from simulations.
+These techniques are commonly called `Halo Abundance Matching' (HAM), or `Subhalo Abundance Matching' (SHAM) in case one assumes that subhaloes host a galaxy on their own (e.g. \cite{SHAM-Kravtsov}, \cite{SHAM-Vale-Ostriker}).
+A further commonly used assumption is based on the fact that subhaloes, once accreted by their respective host halo, quickly loose their mass as their outer regions are stripped away due to tidal forces.
+\cite{Nagai} have shown that the galaxies hosted by subhaloes however, because they're located close to the centre of the subhalo, are stripped of their mass only much later.
+This leads to the approximation that the stellar mass of subhaloes' galaxies isn't directly determined by the current mass of the subhalo, but to either the mass of the subhalo at the time it was accreted by the main halo or the subhalo's peak mass during its formation.
+This is yet another reason why merger trees are essential for mock galaxy catalogues.
+
+Using either abundance matching or by constraining a parametrisation with observational data, the typical galaxy stellar-mass-to-halo-mass (SMHM) relation can be determined, which essentially gives the expected stellar mass for any given halo mass at different epochs such that the resulting galaxy catalogues coincide with observations.
+Usually a one-to-one monotonic relation between stellar and halo mass assumed.
+In this work, such a SMHM relation as found by \cite{Behroozi} is used to determine galaxy stellar masses from merger trees.
+This SMHM relation was chosen for two reasons:
+Firstly, \cite{Behroozi} find that the commonly used double power law for the SMHM relation, like the one used in \cite{Moster}, cannot accurately fit the unique shape of the SMF.
+Secondly, \cite{Behroozi} fits their data up to $z\sim 8$, while others like \cite{Moster} and \cite{Yang} ``only'' go up to $z\sim 4$.
+
+The parametrisation is as follows:
+%
+\begin{align}
+    \log_{10}(M_*(M_h)) &= 
+    \log_{10}(\epsilon M_1) + 
+    f \left(\log_{10} \left( \frac{M_h}{M_1} \right) \right) - f(0)
+    \label{eq:behroozi_SMHM} \\
+    %
+    f(x) &= -\log_{10}(10^{\alpha x} + 1) + 
+    \delta \frac{ [\log_{10}(1+\exp(x))]^\gamma }{1 + \exp(10^{-x})}
+    \label{eq:behroozi_fx}
+\end{align}
+%
+Here $M_*$ is the stellar mass and $M_h$ is the halo mass.
+Because the stellar mass is thought to depend not explicitly on the mass, but on the depth of the potential well where the baryonic matter is located, the mass used to obtain stellar masses within the code is always inclusive, meaning that any parent clump will be considered to contain its substructure's mass, independently of which mass definition of substructure is used to link clumps together between snapshots for the generation of merger trees.
+For central haloes, $M_h$ is its current mass, while for satellites, $M_h$ is the peak progenitor mass in its entire formation history.
+The galaxy is placed at the position of the most tightly bound particle of each dark matter clump.
+
+The other parameters from equations \eqref{eq:behroozi_SMHM} and  \eqref{eq:behroozi_fx} and their best fits as found by \cite{Behroozi} are:
+%
+\begin{align}
+    \nu(a) &= \exp(-4a^2) \\[0.5em]
+    %
+    \log_{10}(M_1)  &= M_{1,0} + (M_{1,a}(a-1) + M_{1,z} z ) \nu \\\label{eq:SMHM_start}
+    \nonumber &= 11.514 + (-1.793(a-1) + (-0.251)z) \nu \\[0.5em]
+    \log_{10}(\epsilon) &= \epsilon_{0} + (\epsilon_{a}(a-1) + \epsilon_{z} z) \nu + \epsilon_{a,2}(a-1) \\
+    \nonumber &= -1.777 + (0.006(a-1) + 0.000z)\nu - 0.119(a-1)\\[0.5em]						
+    \alpha  &= \alpha_0 + (\alpha_a (a-1)) \nu \\
+    \nonumber &= -1.412 + (0.731(a-1))\nu \\[0.5em]
+    \delta  &= \delta_0 + (\delta_a (a-1) + \delta_z z) \nu \\
+    \nonumber &= 3.508 + (2.608(a-1) + ((-0.043)z)\nu \\[0.5em]
+    \gamma  &= \gamma_0 + (\gamma_a (a-1) + \gamma_z z) \nu \\
+    \nonumber &= 0.316 + (1.319(a-1) + 0.279 z )\nu \label{eq:SMHM_end}
+\end{align}
+%
+with $z$ bein the redshift and $a$ being the cosmological scale factor.
+Additionally, one would not expect two haloes of same mass $M_h$ to also each host a galaxy of exactly the same mass.
+Haloes may have different formation histories, spins, and concentrations even when having exactly the same mass.
+For this reason, a lognormal scatter in the halo mass is introduced, which scales with redshift via a two-parameter scaling:
+%
+\begin{align}
+    \xi = \xi_0 + \xi_a(a-1) = 0.218 + (-0.023)(a-1)
+\end{align}
+%
+Lastly, \cite{Behroozi} also introduce parameters to account for observational systematics, which haven't been used in scope of this work.
+
+
+
+
+

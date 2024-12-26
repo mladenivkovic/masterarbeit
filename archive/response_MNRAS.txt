@@ -1,0 +1,400 @@
+> Report on “ACACIA: a new method to produce on-the-fly merger trees in the RAMSES
+> code” by Ivkovi & Teyssier (MN-21-2257-MJ)
+> 
+> Overview
+> 
+> This paper describes the implementation of an algorithm for building merger trees (ACACIA)
+> based on group catalogues recovered by a structure finder (PHEW) in cosmological
+> simulations run with the adaptive mesh refinement code RAMSES. The standard practice of
+> building merger trees during post-processing after the completion of simulation has become
+> unfeasible in the era of extremely large N-body simulations, such as those that are being run
+> to support Euclid science, which produce enormous amounts of data that are unwieldy to
+> store and process. This motivates the need for "on the fly" merger trees, which provide the
+> basis for galaxy evolution modelling using both semi-empirical (e.g. subhalo abundance
+> matching, SHAM) and semi-analytical (SAM) schemes.
+> 
+> The authors provide a brief summary of the PHEW algorithm, which was presented
+> previously in Bleuler et al. 2015, before describing in detail an approach to building merger
+> trees using PHEW catalogues as input. There is some discussion about how to treat
+> (sub)halos that have dropped below the minimum particle number threshold (orphans) and
+> those that disappear and subsequently reappear after several snapshots (which they call
+> jumpers), two well-known problems in the building of merger trees. Careful consideration is
+> given to how halo catalogues can be linked across consecutive output times, and how
+> progenitor and descendant halo lists can be shared across MPI processes in parallel runs.
+> The performance of the code is measured using metrics developed in the "Sussing Merger
+> Trees" comparison project, presented in Srisawat et al. 2013 and Avila et al. 2014. Finally,
+> they use merger trees from a small N-body simulation, in which halos are populated with
+> galaxies whose stellar mass follows the stellar mass - halo mass relation of Behroozi
+> et al. 2013, to create mock galaxy catalogues. They measure the 2-point correlation function
+> and the projected number densities and stellar mass densities of galaxy clusters, and use
+> these measures to highlight the importance of including orphan galaxies in their modelling.
+> 
+> All of the software presented is available via github.
+> 
+> 
+> General Comments
+> 
+> This is a useful and timely addition to the literature on techniques for large N-body
+> simulations. Many state-of-the-art codes include structure finders that are run on-the-fly, but
+> on-the-fly merger tree builders are still a relative rarity. GADGET4 of Springel et al. (2021)
+> does both structure finding with SubFind/SubFind-HBT and merger tree building, but it's
+> crucial that multiple, distinct, codes have the capacity to do this to provide important checks
+> on results.
+> 
+> The novelty of the paper is in how the tree building is implemented on the fly, in a code
+> designed to run on massively parallel system using MPI. The background to tree-building,
+> and the discussion of particular issues that are known in the literature, such as the treatment
+> of orphans (groups that have fallen below the minimum particle threshold
+> that are tracked by the most bound particle at the final time at which the group could be
+> identified) and jumpers (groups that disappear for several output times only to reappear at a
+> later time, generally as a result of it passing through the high density regions of a host halo
+> and therefore not being detected by the structure finder) provides a sound summary, even if
+> it is in essence a review. The analysis draws heavily on the "Sussing Merger Trees"
+> comparison project, and the data used to illustrate the performance of the algorithm allows
+> for straightforward comparison with the Srisawat et al. 2013 and Avila et al. 2014 studies.
+> 
+> Arguably the main weaknesses of the paper are that the comparison could have provided a
+> stronger critique of the ACACIA algorithm (e.g. which existing algorithms should provide
+> similar results? where there are differences, why do they occur?), and there are several
+> instances where interpretations of results that could be explicitly checked and verified are
+> instead speculated upon. A clear and concise flow diagram to describe the algorithm would
+> be better than the dense block of text that is currently used; I suspect most readers will
+> create their own flow diagrams to follow the logic (as I did) if one is not provided.
+
+We have expanded on the critique and the comparisons to other simulation codes, as well as 
+verified our interpretations of results according to the referee's specific comments below.
+Adding a flow diagram is a great idea, and we did so. (Figure 5).
+
+> Overall, I think the paper is a worthwhile addition to the literature and I recommend
+> publication after moderate revisions. I list specific comments below.
+> 
+> 
+> Specific Comments
+> 
+> Page 6/7, Section 4: Given that the paper is about the merger tree algorithm, is there a good
+> reason why it isn't described in detail in the main body of the paper and in the appendix
+> instead? I don't think much is gained by having it in the appendix.
+
+The initial idea was to talk about the main aspects of the algorithm in the main text, and give
+a more of a step-by-step description, in particular concerning the parallelisation aspects of the
+code, in the appendix. We have now expanded on the algorithm in the main body of the text, and
+added a flow diagram as per the referee's suggestion in the previous Section of the review.
+
+> Page 7, 2nd column: "If a different choice of parameters leads to a reduction of the number
+> of branches, it usually corresponds to an increase in the average length of the main
+> branches and a smaller number of merger events." Could you clarify what you mean here?
+> In particular, could you give examples of how using parameter X, for example, and changing
+> it's value in one direction or another affects the trees in this way. I think I understand what
+> you mean, but it's not entirely clear.
+
+We added an example:
+[...] intuitively if we compare the merger trees where
+we use only one tracer particle per clump to the trees that were built 
+using several hundreds tracer particles per clump, we would expect to 
+be able to detect more fragmentation events with the increased number of 
+tracer particles. If the fragmentation remained undetected, we would 
+instead have found a newly formed clump (the fragment) alongside a 
+merging event. Both the ``newly formed'' fragment as well as its
+progenitor, which is now merged into a descendant, will have shorter
+main branches. Conversely, the descendant will have an increased 
+number of branches compared to the scenario where the fragmentation
+was detected.
+
+> Page 8, 1st column: Can you clarify what you mean by, "as a matter of fact handling foreign
+> halo catalogues has proven technically impossible"?
+
+ACACIA is tightly coupled to the PHEW halo finder, and relies heavily on 
+already existing internal structures and tools, in particular the 
+explicit communications which are necessary for parallelism on 
+distributed memory architectures, as well as the structures and 
+their hierarchies as they are defined by PHEW. Attempting to use 
+other halo catalogues would require us to re-write a significant 
+portion of the PHEW halo finder. If we instead used only particle
+data, which is possible, we would still find a different halo catalogue
+compared to other structure finding codes, and we would still not be
+able to do an exact comparison. Furthermore, we also want to 
+demonstrate that the PHEW halo finder can be used within the RAMSES 
+code to produce reliable merger trees.
+
+> Page 8, 2nd column: The spacing between snapshots varies with expansion factor. What
+> motivates the spacing adopted, and how does using fixed spacing in, say, expansion factor
+> affect the results? This strategy probably isn't an issue for the reliability of the merger trees
+> themselves, but it can be an issue for semi-analytical models run on such time-varying
+> spacing trees.
+
+The original motivation was to use a comparable number of snapshots starting from a 
+time when first identifiable haloes appear in the simulations, but had no deeper
+meaning to it. Switching to other strategies does not strongly affect the merger
+trees themselves, as long as the snapshot times are somewhat regular (e.g. don't
+oscillate between high and low output time frequencies). We added recommendations for 
+using different snapshot spacings, and switched to the same snapshot strategy
+they used in Avila et al. in the updated version of the paper to facilitate direct
+comparisons.
+
+> Page 10, 1st column: Clarify that the main branches are longer and the number of branches
+> are higher when compared to the codes shown in Figure 3 of Srisawat et al. 2013. The
+> difference in the length of the main branch is striking - if I consider only the trees with more
+> than 100 particles (given that there seem to be more trees with fewer than 100 particles in
+> the Srisawat et al. Figure), the difference in length looks to be approximately 15 snapshots.
+> Given that all of those codes in Srisawat et al. are quite different, but all are pretty
+> consistent, can you explain why there is such a big difference in the relative performances?
+
+The main difference was that we had a couple of snapshots more than they
+used in Srisawat et al. and didn't use the same output times as they did.
+To avoid further speculation, we re-did the simulations using the same
+output strategy as Srisawat et al. did. The new output redshifts are now
+the ones from the Millenium simulation, and the results we obtain are now
+much more similar to the ones from Avila et al.:
+
+A qualitative comparison of the length of the main branches of the most 
+massive haloes that we obtain in Figure 6 to Figure~3 of A14 shows that 
+our results are in good agreement with what the other codes find: The 
+distribution peaks around the length of 45, it is about 20 snapshots wide, 
+and there are only few cases with main branch lengths below 30. This is in 
+good agreement with what e.g. the MergerTree, TreeMaker, and VELOCIraptor tree
+builders find in combination with the Rockstar or Subfind halo 
+finders. We note that in Figure 3 of A14, both the peak of the
+distribution and the maximal value of the main branch lengths they found are
+at slightly higher values than ours. We attribute this to the slightly lower 
+resolution of our simulations: The first identifiable clumps we find are at 
+snapshot 10, leading to a maximal main branch length of 51, compared to 
+~53 that A14 find. Compared to Figure 3 of Srisawat et al., the distributions we
+find for the lower mass clumps are also in very good agreement. Our high
+clump mass distribution however is much narrower around the peak value of 
+~45. This difference is due to the different halo finders employed,
+as is demonstrated in Figure 3 of A14. The AHF halo finder, which
+was used in Srisawat et al., displays the same differences in the distribution of
+main branch lengths for nearly all tree codes.
+ 
+> Page 10, Figure 6: Please comment on the spike at beta_M=0 in the plot of the logarithmic
+> mass growth, which is the analogue of Figure 7 in Avila et al. 2014. Their Figure is
+> normalised, whereas Figure 6 isn't, but nevertheless the size of the spike looks more
+> pronounced in Figure 6 compared to the Avila et al. 2014 Figure 7. It looks of order 1 dex.
+
+The spike is due to the discrete particle masses and the bins of the histogram.
+If we look at the histogram of dlogM/dlogt (beta_M without the arctan, we don't show this plot),
+we see a large narrow cusp, which when the arctan is applied gets even narrower. Depending
+on the choice of histogram bins, the spike can be amplified. Indeed we changed the
+number of bins from 200 to 100 in the current version of the figure, and the 
+the spike was significantly reduced.
+ 
+> Page 10, 2nd column: I understand that changing the definition from loosely bound to strictly
+> bound will change the mass of the clump and therefore move it between mass bins, but my
+> intuition is that strict boundedness should provide a more stable tracking of clumps.
+> However, it's not obvious from what you have written that this is the case - you seem to imply
+> that you don't get improved tracking, only a change in the mass bin. Can you please clarify?
+
+That is indeed the case.  We too expected the strictly bound clumps to 
+allow more stable tracking, but the only effect we noticed was that it 
+systematically promotes subhaloes to lower masses and so naturally selects 
+better resolved, higher mass clumps from the halo catalogue.
+
+> Page 10, 2nd column: You comment on a few large clumps at z=0 having a main branch
+> length of unity, shown in Figure 5, and note the explanation of Srisawat et al. 2013. The
+> fragmentation explanation is probably correct, but you can check this explicitly - for example,
+> you have the particle IDs and you know what their positions and velocities are as a function
+> of time, so you can track them. Please verify that these clumps are the products of
+> fragmentation and comment on the conditions under which they form. It's plausible that this
+> fragmentation will be a function of the resolution of the simulation (insofar you might find its
+> frequency rises as you probe smaller better resolved structures too). How can you be
+> confident that these aren't structures that had otherwise disappeared as they passed through
+> the host halo and then reappeared?
+
+We have verified that fragmentation is indeed part of the problem in this case.
+We have however identified a second culprit, which is the way that
+PHEW establishes substructure hierarchies and the subsequent particle
+unbinding. The hierarchy is determined by the density of the density peak 
+of each clump: A clump with a lower peak density will be considered lower 
+in the hierarchy of substructure. So in situations where two adjacent 
+clumps have similarly high density peaks, their order in the hierarchy 
+might swap. The unbinding algorithm then strips the particles from the 
+sub-haloes that have the lowest level in the hierarchy and passes it on to 
+the next level, amplifying the particle loss which these sub-haloes 
+experience. This loss of particles is essential here because it prevents 
+the algorithm to establish links between progenitors and descendants. 
+About half of the main branches that we tracked back in time were cut 
+short for this reason: The leaf of the main branch was a sub-halo with 
+much fewer particles (~ 100) whose progenitor the algorithm was 
+not able to identify and who in subsequent snapshots was found to be 
+the main halo, gaining a lot of mass in a very short time.
+In these cases, it was indeed mostly small, not well-resolved substructure 
+containing ~100 particles not being tracked correctly between snapshots.
+In certain cases, substructure disappearing for a snapshot was indeed an 
+issue, but this per se is not the main issue. Instead, the swap from 
+sub-halo to a main halo is the root of the problem. Due to this misidentification,
+the sub-halo would easily gain 10-20 times its mass over one snapshot, 
+which is problematic by itself, and then "take over" as the main halo
+until z = 0. So the main problem here is with PHEW, not with ACACIA.
+This is clearly a serious issue, and its resolution will be a high 
+priority in future work. The way PHEW establishes hierarchies needs to
+be modified. We could define the peak hierarchy not based on the peak 
+density, but rather on the peak mass, e.g. similarly to AdapdaHOP. Additionally,
+with the structure information from previous snapshots available now through
+ACACIA, further improvements can be made by taking this information
+into account when constructing the sub-halo hierarchies, in a similar spirit
+as HBThalo does. However, since this publication focusses on the merger tree
+algorithm, not on the clump finder, we think it's admissible to postpone the
+resoltion of this issue to future work.
+ 
+> Page 11, Tables 3,4,5: what does it mean to use 200,500,1000 tracer particles in clumps
+> with <100, 100-500 particles? What do the numbers recovered correspond to?
+
+Even though we performed the simulations with
+up to 1000 tracer particles, the mass threshold for clumps was always
+kept constant at 10 particles. The number of tracer particles per clump 
+is an upper limit, not a lower limit. For clumps that contain less than 
+n_mb, this means that they will be traced by every single 
+particle they consist of. In effect, we expect that this assigns greater
+weight to clumps which are more massive than n_mb to be identified 
+as the main progenitor, and should hopefully decrease extreme 
+mass growths and mass fluctuations. To illustrate, consider for example the 
+merging of two clumps with unequal masses, where
+all of the tracer particles of both clumps are found inside the resulting
+merged descendant. Raising the number of tracer particles above the less
+massive clump's particle number in this scenario means that the number of
+its tracer particles inside the descendant will remain constant, while
+the number of tracer particles stemming from the more massive clump will
+increase, and thus raising its merit to be the main progenitor. This is 
+also the desired outcome. 
+Should however both clumps have masses above n_mb particle masses,
+then our inclusion of the clump masses in the merit function should 
+nevertheless find the more massive clump to be the main progenitor if it
+had a mass closer to the resulting descendants mass. So we expect that 
+increasing the number of tracer particles should enhance this effect,
+and hence lead to at least as smooth mass growths and fluctuations.
+ 
+> Page 11, 1st column: can you be explicit in how you estimate the 30% of links lost that are
+> associated with merger events if you only use 1 tracer particle? I can recover several
+> different numbers depending on the choice of comparison. Similarly, I can read off a
+> threshold of 100 particles from Figure 7, but it is less obvious from the tabulated data.
+
+If we look at the two highest
+mass bins for clumps in the two bottom rows of Table~3,
+we can see that the average number of branches converges towards
+the values of 1000 tracer particles used, and is only slightly lower in
+the cases when 200 or 500 tracer particles were used. Comparing these
+converged results to the ones with only one tracer particle, 
+we loose ~30% of the average number of branches, which are 
+links associated to merger events.
+
+> Page 11, 2nd column: you look at the effect of the number of tracers on the mass growth in
+> Figure 8, and state that the effect is very weak except at beta_M=+/-1 and xi_M=+/-1, arising
+> because of broken links due to small numbers of tracer particles. This is something that you
+> can check explicitly, so you should verify that it is indeed the case.
+
+We have verified that this is the case.
+ 
+> Page 11, 2nd column & Table 4: the issue of dead branches is an interesting one, and it's not
+> surprising that it strongly depends on the number of tracer particles. I am surprised by how
+> many dead trees there are, especially given the resolution of the simulation and the size of
+> the volume, although given that the median particle number of a LIDIT is 20 suggests that it's
+> probably not so surprising. It is interesting to ask if the halos that become LIDITs have
+> particular properties that make them more likely to be LIDITS. Are they preferentially in
+> overdense regions, for example?
+
+We found that
+taking all LIDITs into account, over 80% of them were main haloes.
+LIDITs containing more than 50 particles however were over 95% subhaloes.
+This suggests that the number of very low mass LIDITs is dominated
+by poorly resolved small clumps in low density environments, since
+in overdense environments clumps wouldn't have been identified as main 
+haloes, but as subhaloes instead. Conversely, with increased resolution 
+of the clumps, the overwhelming majority of LIDITs are subhaloes, and as
+such in overdense regions.
+
+> Page 12, 1st/2nd column: the authors may find it useful to look at the recent study of Bakels
+> et al. 2021, MNRAS, 501, 5948, who provide statistics of halos and subhalos whose
+> trajectories have taken them within the virial radii of other halos and out again.
+
+This was an interesting read indeed. However, the statistics provided therein
+are not straightforward to compare in relation to either LIDITs nor jumpers,
+nor do I think a comparison would be meaningful in this context. The reason is
+that our algorithm works on a subhalo basis, and will link subhaloes as well as
+haloes. Using the classification of haloes and subhaloes defined by Bakels et al 2021, 
+this means that the scenarios where "jumping" may occur correspond to multiple classes
+as long as the clumps are in overdense regions where the clump finder could err: 
+They could be orbital haloes and subhaloes, first-infall haloes
+and subhalos, as well as backsplash haloes. We have verifid that LIDITs and jumpers 
+occur predominantly in overdense regions: over 95% of LIDITs with 50 or more particles 
+were subhaloes. Without a lower particle threshold ~65% of progenitors of jumpers 
+(the last identifiable progenitor before the clump "jumped") were subhaloes. An 
+additional 16% of descendant jumper clumps were also subhaloes. This is evidence that
+the "jumping" predominantly occurs in overdense regions.
+To enable meaningful comparisons to the findings of Bakels et al 2021, we would
+need to re-create their entire work, which is out of scope for this paper.
+
+> Page 11/12/13: The metrics presented are instructive, but they are difficult to interpret when
+> diagnosing how well a merger tree builder is performing. I would recommend looking at the
+> Dendogram merger tree visualisation tool presented in Poulton et al. 2018, PASA, 35, 42,
+> which tracks halo growth and (sub)halo orbital evolution in a manner that makes issues with
+> e.g. orphans and jumpers easy to diagnose. This would be particularly interesting as a way
+> to diagnose the nature of the massive clumps with short main branches. Another interesting
+> plot to make would be analogous to Figures 14 to 16 in the Poulton et al. paper - which
+> effectively measures the radius at which subhalos can be tracked to as a function of their
+> resolution, and is useful to diagnose what happens to both orphans and jumpers.
+
+We thank the referee for the recommendation, and indeed intend to make use of the tools and 
+methods presented in Poulton et al. 2018 for future work. We have plans to work on and improve
+the orphan particle and orphan galaxy models based on physically motivated approaches with
+the goal to improve our merger trees and mock galaxy catalogues, as well as to
+mend problems that the clump finder has displayed. For that work, the 
+Dendogram merger tree visualisation tool will certainly be a valuable asset.
+
+> Page 15, 1st column: I am a little surprised that the deviation of the 2-point correlation
+> function occurs at a scale of order 0.3 Mpc. How does this compare to the typical level of
+> refinement? It's several times the size of a reasonable mass halo. What happens if you relax
+> the requirement that halos must contain at least 300 particles to host a galaxy? What if you
+> started with 50, or 100, and varied the number up to 500? I'm not suggesting that this will be
+> robust, but checking the behaviour will at least provide some additional insight into the extent
+> that resolution is affecting this.
+
+We have tried various mass thresholds for galaxies. Using no mass threshold results in no
+visible effect on the correlation function. For a mass threshold of 10^10 M_Sol, we see very
+minor changes compared to the plotted threshold of 10^9 M_Sol at ~1 Mpc scales. For a mass
+threshold of 10^11 M_Sol, a much stronger difference appears. The obtained correlation function
+is much more noisy due to the strongly reduced sample size, but generally follows the observed
+power law even to scales of 0.1 Mpc.
+At these small scales, there are multiple effects at work that contribute to the deviation.
+On one hand, the dynamics of the orphan galaxies are not computed taking into account their
+stellar mass, but using their corresponding dark matter particle's mass, so orphans with
+masses above 3e8 M_Sol will systematically use underestimated masses for their dynamics.
+Secondly, we use the cloud-in-cell technique to compute the density distribution that is then
+used to compute the correlation function. This results in a smoother, and less noisy density
+field, but it also means that effectively we are assigning each galaxy, regardless of its mass, 
+a volume the size of a cell, which in our case is 100 Mpc / 1024 cells ~ 0.1 Mpc / cell. So a
+deviation at ~0.3 Mpc corresponds to ~3 cells below which we don't recover the observed
+correlation function. Given the galaxy masses and the radii in question, this corresponds to 
+Milky Way Satellites not being properly resolved on the grid used to compute the Fourier
+Transforms to obtain the correlations.
+
+ 
+> Page 18: I would recommend using the most recent references for VELOCIraptor and its
+> merger tree builder, TreeFrog; these are Elahi et al. 2019, PASA, 36, 21, and Elahi et al.
+> 2019, PASA, 36, 28
+
+ The references have been updated.
+ 
+> Page 21, Figure B3: If I compare to Figures 7 and 8 of Avila et al. 2014, I am struck that the
+> logarithmic mass growth of subhalos looks more symmetric than any of the tree builders
+> presented with pronounced peaks at beta_M=+/-1, other than maybe JMerge. The mass
+> growth fluctuations also has two pronounced peaks at eta_M=+/-1, which isn't really
+> reflected in any of the combination of halo finder and tree builders presented in Avila et al.
+> 2014. I think this is worth commenting on properly
+ 
+We found that the reason why our distribution looks so 
+symmetrical is due to the particle unbinding method and the way sub-halo hierarchies are 
+established in PHEW, similarly to what we have found to be a reason for the short main branch
+lengths in Section 5.2. The hierarchy is determined by the density of the density peak of each clump: 
+A clump with a lower peak density will be considered lower in the hierarchy of substructure. So in 
+situations where two adjacent sub-haloes have similarly high density peaks, their order in the 
+hierarchy might change in between two snapshots due to small changes. The unbinding algorithm then 
+strips the particles from the sub-haloes that have the lowest level in the hierarchy and passes it 
+on to the next level, amplifying the mass loss which these sub-haloes experience. If in the next 
+snapshot the order in the hierarchy for these two clumps are inverted, the clump which experienced 
+a mass loss previously will now experience a strong mass growth and vice versa. In 
+Figure A3 such an oscillation over two snapshots will simultaneously add 
+a strong mass growth and a strong mass loss twice in place of a net smoother mass loss, leading to 
+the symmetry of the distribution. We verified that about 10% of strong mass growth events with 
+$\beta_M > 0.75$ are also accompanied by the respective sub-haloes increasing their level in the 
+hierarchy. Similarly, about 10% of strong mass loss events with $\beta_M < -0.75$ are 
+accompanied by the respective sub-haloes decreasing their level in the hierarchy.

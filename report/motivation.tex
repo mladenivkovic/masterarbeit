@@ -1,0 +1,42 @@
+%==================================
+\section{Motivation}
+%==================================
+
+Mock galaxy catalogues, artificial catalogues of galaxies created using numerical simulations, have become indispensable tools for astronomy and cosmology.
+Usually simulations can give real-space galaxy data, while observational data is measured in redshift-space.
+By following a light cone through the past, redshift-space catalogues may be generated from simulated real-space data, enabling direct comparisons to observations, possibly aiding in the interpretation thereof.
+Observational effects and uncertainties can be included in results of simulations more easily than taken out from observations, so by comparing the mocks with observed catalogues one can test theories and assumptions and estimate systematic and statistical errors.
+Furthermore, mock galaxy catalogues can be used to plan and forecast future surveys and to develop analysis codes for anticipated observational data.
+
+The current concordance model of cosmology, the $\Lambda$CDM model, states that the Universe is made up from $\sim 5\%$ baryonic matter, which is what galaxies are made of, $\sim 25\%$ dark matter and $\sim 70\%$ dark energy.
+Dark matter has fundamentally different properties from baryonic matter:
+It is collisionless, the only significant interaction it experiences is via gravity.
+This property makes dark matter easier and cheaper to simulate than baryonic matter, where many physical and hydrodynamical effects such as viscosity, radiation, pressure, heating, cooling and many more need to be taken into account as well.
+For efficiency, cosmological simulations often neglect baryonic effects in the Universe and replace the baryonic matter with dark matter in order to preserve the total matter content.
+Such simulations are commonly referred to as `\emph{dark matter only}' (DMO) simulations.
+With growing processing power, improved algorithms and the use of parallel computing tools and architectures, larger and better resolved DMO simulations are becoming possible.
+The current state-of-the-art cosmological simulation \parencite{PKDGRAV} contained 2 trillion particles.
+However, in order to obtain mock galaxy catalogues, galaxies somehow need to be re-introduced into DMO simulations.
+Various concepts to achieve that goal have been developed and used, some of which will be introduced later.
+Most of them however have in common that they place galaxies in condensates of dark matter, called `\emph{haloes}', where the galaxy's properties depend on the properties of its host halo's properties and formation history.
+In the hierarchical bottom-up structure formation picture, large haloes are thought to form mainly through consecutive merging events of smaller haloes, which is schematically shown in figure \ref{fig:mergertree_scheme}.
+The merger histories can be followed by means of a tree structure, which are commonly referred to as `\emph{merger trees}'.
+Merger trees are essential to obtain accurate mock galaxy catalogues.
+Why that is the case will be further elaborated and illustrated at a later point.
+
+
+While bigger simulations can yield data of unprecedented size and resolution, they also produce large amounts of data which needs to be stored and post-processed effectively.   
+This creates a variety of issues.
+On one hand there is a possibility that not all produced simulation data can be stored because it is simply too large. 
+Another issue is that most modern astrophysical simulations are executed on large supercomputers which offer large distributed memory. 
+Post-processing the data they produce may also require just as much memory, so that the analysis will also have to be executed on the distributed memory infrastructures.
+The reading and writing of a vast amount of data to a permanent storage remains a considerable bottleneck, particularly so if the data need to be read and written multiple times.
+One way to reduce the computational cost is to include analysis tools like halo-finding and the generation of merger trees in the simulations and run them ``\textit{on the fly}'', i.e. run them during the simulation. 
+
+
+In this work, a new implementation of a merger tree algorithm into the simulation code \ramses\ \parencite{ramses}, designed to work on the fly and on parallel architectures, as well as mock galaxy catalogues obtained using these merger trees on the fly, are presented and tested.
+This work is structured as follows:
+Chapter \ref{chap:introduction} (partially adapted from \cite{bachelor_thesis}) gives a short introduction amongst other topics to cosmological simulations of dark matter, halo finding, merger trees, and obtaining galaxies from DMO simulations.
+The description of the merger tree algorithm and the results of tests of the resulting from merger trees are in chapter \ref{chap:my_code}.
+Mock galaxy catalogues obtained through the presented merger tree algorithm are shown and tested in chapter \ref{chap:mock_catalogues}.
+Finally, this work is concluded in chapter \ref{chap:conclusion}.

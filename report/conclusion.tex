@@ -1,0 +1,47 @@
+%=================================================
+\section{Conclusion}\label{chap:conclusion}
+%=================================================
+
+
+
+
+An algorithm to identify dark matter halo merger trees, designed to work on the fly on parallel computing systems with the adaptive mesh refinement code \ramses, was presented.
+Clumps of dark matter are tracked across snapshots through up to some user-defined number, $n_{mb}$, of particles they consist of.
+The best choice for $n_{mb}$ seems to be around 100-200, where the trade-off between computational cost and performance appears optimal.
+Furthermore, the influence of various definitions of substructure properties on the resulting merger tree were tested.
+Whether substructures contain their respective substructures' masses or not had negligible effect on the merger trees.
+However defining particles of substructure to be gravitationally bound to that substructure if and only if the particles can't leave the spatial boundaries of that substructure leads to much less extreme mass growths and extreme mass growth fluctuations of dark matter clumps, suggesting that it should be the preferred definition for accurate merger trees.
+
+In agreement with the bottoms-up hierarchical structure formation picture for dark matter haloes, the merger trees of massive haloes at $z=0$ were found to tend to have more branches and their formation history can often be traced to very high redshifts.
+Even clumps on the lower mass end were successfully tracked back to high redshifts.
+
+
+With the known formation history of dark matter clumps, using a stellar-mass-halo-mass relation (eqns. \eqref{eq:SMHM_start}-\eqref{eq:SMHM_end}) galaxies can be placed in a dark matter only simulation to obtain mock galaxy catalogues.
+The galaxies are placed at the position of the most tightly bound particle of any dark matter clump.
+Once a clump merges into another and dissolves beyond the possibility of identification, its last assigned galaxy is kept track of.
+Such an ``orphan'' galaxy is used two reasons.
+Firstly, just because a clump can't be identified any more due to the environment it currently resides in, it doesn't mean that the galaxy that it hosted is also dissipated.
+On the contrary: \cite{Nagai} showed that tidal stripping of galaxies inside a dark matter halo sets in much later than for the subhalo they reside in.
+Secondly, it is possible for a subhalo to re-emerge from its host halo at later snapshots because it wasn't detected by the clump finder in the density field of the host halo, but still existed.
+Such a situation is illustrated in figure \ref{fig:jumper-demo}.
+In these cases, orphan galaxies are used to establish a link between progenitor and descendant clumps across multiple snapshots.
+
+However, the current implementation only contains the option to forget past merged progenitors after a user defined number of snapshots has passed, but by default, it will track them until the simulation ends.
+This might lead to misidentifications of progenitor-descendant pairs and therefore wrong formation histories.
+Solutions for this problem would be either to remove the orphans after the estimated time for them to merge into the parent structure has passed, which could be e.g. the dynamical friction time (eq. \eqref{eq:dynamical_friction_time}), or introduce some form of galaxy-galaxy merging cross sections to compute the probability of a collision between galaxies that will result in a galaxy merger.
+
+From a technical viewpoint, one clear bottleneck in the current merger tree algorithm is the requirement to write progenitor particles and data to file and read them back in and sort them out at a later snapshot. 
+A possible improvement would be to track which particles left each task’s domain and which particles entered in between two snapshots. The progenitor particles would still be read and written to and from files, but it would minimise the sorting part of the algorithm where each MPI task figures out which tracker particles it contains.
+Another option would be to change the amount of data each MPI task needs to read in. 
+The maximal velocity of any particle in the time interval between two snapshots should be traced. This way, once the simulation advances to the next snapshot, it would be possible to estimate the maximal distance any particle could’ve travelled.
+Provided every MPI task has knowledge on how the entire computational domain is split between tasks, it could skip reading in data written by tasks where no particle currently in this task’s domain could have come from.
+
+
+
+Given that the mock galaxy catalogues in this work were created using simulations with relatively low spatial and mass resolution of $512^3$ particles in boxes of 69 and 100 comoving Mpc each, the obtained correlation functions (shown in figure \ref{fig:correlations}) and stellar mass functions (figure \ref{fig:smf}) show good agreement with observed stellar mass functions.
+By comparing the results of the two simulations it can be expected that a higher spatial resolution should improve the clustering statistics, and together with a higher mass resolution the stellar mass functions of central galaxies should also improve.
+
+
+
+
+

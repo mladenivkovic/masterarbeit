@@ -1,0 +1,230 @@
+#!/bin/bash
+
+# Documentation: See $errormessage
+
+
+errormessage='
+treeplot script
+
+Usage:  treeplot <halo>  | equivalent to treeplot -h
+    or: treeplot <options>
+
+Options: 
+All options require clump_0*  and unb_form_out_particleoutput* files.
+
+
+-all
+    makes a tree plot for every halo found in last output step, which is
+    expected to be in the last output_* directory.
+    => NOT WRITTEN YET.
+
+
+-h <halo> | -halo <halo>
+    makes a tree plot for halo <halo> found in last output step directory
+
+
+-sh <halo> <dir>| -start-here <halo> <dir>
+    make a tree plot for halo <halo> found in dir <dir>
+
+-plots <halo>
+    makes a tree plot for halo <halo> found in last output step directory
+    as well as plotting all particles from all outputs and marking the
+    progenitors with a different color.
+'
+
+
+
+#==============================
+# Functions
+#==============================
+
+function checkdir {
+    # $1 is expected to be srcdir
+    # checks whether directories exists; exits if not
+    if [ ! -d "$1" ]; then
+        echo "ERROR: didn't find directory" "$1"
+        exit
+    fi
+}
+
+
+function checkfiles {
+    # $1 is expected to be srcdir
+    # checks whether files in directory exists; exits if not
+    if [ ! -f "$1" ]; then
+        echo "ERROR: didn't find file" "$1"
+        exit
+    fi
+}
+
+
+function prepare {
+    # $1 is expected to be srcdir, but is not necessary argument
+    # checks whether given directory and files exists
+    # counts noutput, ncpu and last output dir to allocate arrays in python scripts
+  
+    if [[ $# == 0 ]]; then
+        # if no argument given: find the last directory yourself
+        for dir in output_*; do
+            lastdir=$dir
+        done
+
+    else
+        # if directory number given:
+        if [[ $1 =~ ^[0-9]+?$ ]] ; then
+           dirnr=`printf "%05d" "$1"` 
+           lastdir=output_$dirnr
+        else
+            lastdir=$1
+        fi
+
+    fi
+
+    firstdir=$( ls | grep "output_" | head -n 1 )
+
+    # calculate number of outputs
+    firstdirnr=${firstdir#output_}
+    firstdirnr=$(echo $firstdirnr | sed 's/^0*//')
+
+    lastdirnr=${lastdir#output_}
+    lastdirnr=$(echo $lastdirnr | sed 's/^0*//')
+
+    noutput=$(( $lastdirnr - $firstdirnr + 1 )) # if error here: there mustn't be any filenames containing "output", otherwise there'll be a problem when computing $noutput @ line 
+
+    checkdir $lastdir
+    checkfiles "$lastdir"/mergertree.txt*
+    ncpu=`ls "$lastdir"/mergertree.txt* | wc -l`
+
+}
+
+
+
+
+
+#==============================
+# Reading command line args
+#==============================
+
+
+
+#===========================
+if [[ $# < 1 ]]; then 
+#===========================
+    echo ""
+    echo -e "$errormessage"
+    exit
+
+
+
+
+#===========================
+elif [[ $# == 1 ]]; then 
+#===========================
+
+    #if gotten a number only
+    if [[ $1 =~ ^[0-9]+?$ ]] ; then
+
+        echo "Calling myself with -h " $halo
+        halo=$1
+        script=$SCR/treeplot
+        $script -h $halo
+        exit
+
+    else
+
+        case $1 in
+
+            -all )
+                script=$SRC/treeplot_all.py
+                echo "Not implemented yet."
+                exit
+            ;;
+            
+            *)
+                echo "I don't recognise your arguments."
+                echo -e "$errormessage"
+                exit
+            ;;
+
+        esac
+    fi
+
+
+
+#===========================
+elif [[ $# == 2 ]]; then
+#===========================
+
+    case $1 in
+        
+        -h | -halo)
+            halo=$2
+            script=$SCR/treeplot-halo.py
+            prepare 
+            python3 $script $halo $lastdir $noutput $ncpu 
+        ;;
+
+
+        -plots)
+            halo=$2
+            script=$SCR/treeplot-halo-clumpplots.py
+            prepare
+            python3 $script $halo $lastdir $noutput $ncpu
+        ;;
+
+
+        *)
+        echo "I don't recognise your arguments."
+        echo -e "$errormessage"
+        exit
+    esac
+
+
+
+
+
+
+
+#===========================
+elif [[ $# == 3 ]]; then
+#===========================
+    
+    case $1 in
+
+      
+        -sh | -start-here)
+
+            halo=$2
+            startdir=$3
+            prepare $startdir
+            echo "found lastdir:" $lastdir
+            echo "noutput" $noutput
+        ;;
+
+#
+        *)
+        echo "I don't recognise your arguments."
+        echo -e "$errormessage"
+        exit
+    esac
+
+
+
+
+
+else
+    echo "I don't recognise your arguments."
+    echo -e "$errormessage"
+    exit
+fi
+
+
+
+
+
+
+
+
+
+
+

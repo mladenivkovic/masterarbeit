@@ -1,0 +1,72 @@
+%=======================
+% Header
+%=======================
+\input{./header}
+
+
+
+
+
+
+
+%=======================
+% Document
+%=======================
+\begin{document}
+	
+	%--------------------------------------------
+	% Stuff that needs to be done before all else
+	%--------------------------------------------
+	%\pagestyle{plain}
+%	\nocite{*} % show all entries of bibliography, even if they are not cited.
+	
+	%-------------
+	% Titlepage
+	%-------------
+	
+	\input{title}
+	
+	%-----------------
+	% Actual content
+	%-----------------
+	\input{abstract}
+	\input{motivation}
+	\input{introduction-ramses}
+	\input{introduction-halofinding}
+	\input{introduction-unbinding}
+	\input{introduction-parallel}
+	\input{introduction-mergertrees}
+	\input{introduction-SHAM}
+	\input{mergertree_algorithm}
+	\input{mergertree_testing}
+	\input{SHAM_testing}
+	\input{conclusion}
+	
+	
+	
+	
+	
+	
+	
+	%--------------
+	% Bibliography
+	%--------------
+	%https://www.sharelatex.com/learn/Bibliography_management_in_LaTeX
+	%\medskip % or: \bigskip to add some space
+	
+	\clearpage
+	\printbibliography[heading=bibintoc]
+	% DONT FORGET TO COMPILE THE BIBLIOGRAPHY WITH BIBTEX WHEN CHANGES ARE MADE.
+	%\printbibliography[heading=bibintoc,title={Set some title instead of "References"}]
+	%if heading=bibintoc: set references in table of contents
+	
+	
+	
+	%-----------
+	% APPENDIX
+	%-----------
+	\include{appendix}
+	%\clearpage
+
+
+\end{document}

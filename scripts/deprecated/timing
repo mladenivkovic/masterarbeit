@@ -1,0 +1,90 @@
+#!/bin/bash
+
+errormsg='
+usage: timing <flag> 
+
+flag options:
+
+-p
+    parallel executions, cosmo
+-pd
+    parallel executions, dice
+'
+
+if [ "$#" -ne 1 ]; then
+    echo "$errormsg"
+    exit
+fi
+
+timeformat=" \t wall time (s) \t CPU time (s) \t Max Mem(kb) \t Output\n \t %e \t\t xyz  \t %M \t %O \nabc %S %U"
+
+logfile='timing_temp.log'
+resultfile='timing'"$1"'.txt'
+
+rm -i $resultfile
+
+case $1 in
+    -p)
+    title='Cosmo parallel timing '
+    execfile='../ramses3d-merger'
+    namelist='merger.nml' 
+    ;;
+
+    -pd)
+    title='Dice parallel timing '
+    execfile='../ramses3d-merger-dice'
+    namelist='merger-dice.nml' 
+    ;;
+
+    *)
+    echo "$errormsg"
+    exit
+    ;;
+esac
+
+
+echo "$title" >> "$resultfile"
+
+
+#=========
+# LOOP
+#=========
+# for i in {1..100}; do
+for i in 1; do
+
+    echo "iter" $i
+
+    case $1 in
+
+        -p | -pd)
+        /usr/bin/time -f "$timeformat" -o $logfile mpirun -n 4 $execfile "$namelist" 2>&1
+        # /usr/bin/time -f "$timeformat" -o $logfile mpirun -n 4 $execfile "$namelist" >/dev/null 2>&1
+        ;;
+
+        -s | -sd)
+        /usr/bin/time -f "$timeformat" -o $logfile $execfile "$namelist" >/dev/null 2>&1
+    esac
+
+    timesum=`cat $logfile | awk 'NR==3{result = $2 + $3; print result}'`
+
+    sed -i "s/xyz/$timesum/g" $logfile
+    sed -i '/^abc/d' $logfile
+
+    tail -n 1 "$logfile" >> "$resultfile"
+    rm "$logfile"
+done
+
+
+
+
+maxval=`$SCR/timing_computemax.py $resultfile`
+
+echo "Max values:"
+echo "   wall time (s)    CPU time (s)    max mem (Mb)  output written"
+echo "$maxval"
+
+echo "-------------------------------------------" >> $resultfile
+echo "" >> $resultfile
+echo "Max values:" >> $resultfile
+echo "   wall time (s)    CPU time (s)    max mem (Mb)  output written" >> $resultfile
+echo "$maxval" >> $resultfile

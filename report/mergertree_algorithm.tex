@@ -1,0 +1,60 @@
+%====================================================================
+\section{Making and Testing Merger Trees}\label{chap:my_code}
+%====================================================================
+
+%============================================
+\subsection{Making Merger Trees}
+%============================================
+
+
+The first step for any merger tree code is to identify plausible progenitor candidates for descendant clumps as well as descendant candidates for progenitor clumps.
+In this algorithm, this is done by tracking up to a maximal number, labelled $n_{mb}$, of particles per progenitor clump.
+The minimal number of tracker particles is given by the mass threshold for haloes.
+The tracker particles of any halo are chosen to be the $n_{mb}$ particles with the lowest energy $E$:
+\begin{align*}
+	E = m \mathbf{v} ^2 + \phi(\mathbf{r})
+\end{align*}
+where $m$ is the particle's mass, $\mathbf{v}$ is the particle's velocity relative to the halo's bulk velocity, $\phi$ is the gravitational potential of the halo and $\mathbf{r}$ is the position of the particle.
+If $E < 0$, a particle is considered to be energetically bound to the halo. 
+Selecting the $n_{mb}$ particles with lowest energy $E$ thus corresponds to choosing the ``$n_{mb}$ \textbf{m}ost (tightly) \textbf{b}ound particles of the halo''.
+This choice is made because the most strongly bound particles are expected to more likely remain within the clump between two snapshots.
+
+
+For every clump in the current snapshot, the $n_{mb}$ tracker particles are found and written to file.
+In the following output step, those files will be read in and sorted out: 
+The clumps of the previous snapshot will be the progenitors of this snapshot. 
+Based on in which descendant clump each progenitor's particles ended up in, progenitors and descendants are linked, i.e. possible candidates are identified this way.
+ 
+Next, the main progenitor of each descendant and the main descendant of each progenitor need to be found. 
+This search is performed iteratively.
+A main progenitor-descendant pair is established when the main progenitor of a descendant is the main descendant of said progenitor. 
+At every iteration, all descendant candidates of all progenitors that haven't found their match yet are checked;
+The descendants without a matching progenitor however only move on to the next best progenitor candidate. 
+For both descendants and progenitors, all candidates are ranked from ``best'' to ``worst'' based on the merit function \eqref{eq:merit}.
+The iteration is repeated until every descendant has checked all of its progenitor candidates or found its match. 
+Progenitors that haven't found a main descendant that isn't taken yet will be considered to have merged into their best fitting descendant candidate.
+
+After the iteration, any progenitor that is considered as merged into its descendant will be recorded as a ``past merged progenitor''.
+Only one, the most strongly bound, particle and the time of merging will be stored for past merged progenitors.
+This particle is referred to as the ``galaxy particle'' of the merged progenitor.
+Storing this data will allow to check in later, non-consecutive snapshots whether the progenitor has truly merged into its main descendant and to track orphan galaxies.
+
+Then descendants that still haven't got a progenitor at this point will try to find one in non-consecutive past snapshots:
+The particles that the descendant consists of are checked for being a galaxy particle of a past merged progenitor. 
+The most strongly bound galaxy particle will be considered the main progenitor of the descendant under consideration.
+
+
+Descendants that still haven't found a progenitor at this point are deemed to be newly formed.
+This concludes the tree-making and the results are written to file.
+
+Because every processing unit in the current implementation reads in all progenitor data, which unlike the current clump data doesn't change any more, no intricate and flexible communication structures like a peak communicator for the clump finder are necessary.
+Simple collective MPI communications suffice.
+
+Lastly, there is an option to remove past merged progenitors from the list once they merged into their main descendants too many snapshots ago.
+By default, the algorithm will store them until the end of the simulation.
+For the interested reader, a detailed description of the merger tree algorithm is given in appendix \ref{app:detailed_mergertree}.
+
+
+
+
+

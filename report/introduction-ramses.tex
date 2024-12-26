@@ -1,0 +1,102 @@
+%===================================================
+\section{Introduction}\label{chap:introduction}
+%===================================================
+
+
+%================================================================================================
+\subsection{Simulating Dark Matter with {\normalfont \scshape RAMSES}}
+%================================================================================================
+
+
+
+A system that contains many particles is called an ``\emph{N-body system}''.
+A collisionless N-body system is described by the following equations for the particles with positions $\mathbf{x}_p$ and velocities $\mathbf{v}_p$:
+\begin{align}
+&\frac{\de\mathbf{x}_p}{\de t} =  \mathbf{v}_p &\frac{\de\mathbf{v}_p}{\de t} = - \nabla_x \phi \label{eqn:particle_eqns}
+\end{align}
+%
+with
+%
+\begin{align}
+&\Delta_x \phi = 4 \pi G \rho \label{eq:poisson}
+\end{align}	
+%
+Where $\phi$ is the potential, $G$ the gravitational constant and $\rho$ the mass density field.
+For a collisionless system, the only interaction and therefore the only source of acceleration is gravity.
+
+\ramses\ \parencite{ramses} is a N-body and hydrodynamical adaptive mesh refinement (AMR) code which uses the ``\emph{Fully Threaded Tree}'' data structure of Khokhlov \parencite{FTT}.
+Aside from many other uses, it can simulate the time evolution of particles by numerically integrating equations \eqref{eqn:particle_eqns}.
+In the case of dark matter only (DMO) simulations, the matter content of the Universe is taken to consist only of collisionless dark matter, thus neglecting any baryonic physics like star or galaxy formation.
+The simulation usually consists of a (physically) large box, called the domain, which is assumed to represent a typical chunk of the Universe.
+According to the cosmological principle, the Universe is homogeneous and isotropic on large enough scales, so if the physical domain is sufficiently large, one may pretend to simulate the entire Universe at once by introducing periodical boundary conditions: 
+If a particle would leave a boundary surface of the domain, it is reintroduced into the system at the opposite surface.
+This way, one simulates the entire Universe by assuming it consists of an infinite number of identical adjacent boxes.
+
+Particles in the domain represent groups of dark matter particles and usually are all identical.
+Since the density of the Universe is known, the mass of each particle is determined by the total number of particles in the domain and the physical size of the domain.
+
+The domain is covered by a Cartesian grid, called the mesh.
+Simulations require numerical integration, whose accuracy increases as the size of a grid cell decreases, but smaller grid cells naturally need more resources to cover a domain of the same size.
+AMR is a method that ``\textit{tries to attain a fixed accuracy for a minimum cost}'' \parencite{AMR} by refining the mesh only where and when necessary.
+``Refining'' in this case means that cells of smaller and smaller sizes are introduced until the desired accuracy is achieved.
+Grid cells that contain lots of particles will be refined many times, while grid cells that contain no particles won't be refined at all.
+%The unrefined grid is called the ``\emph{coarse grid}'' and the number of times a cell of the coarse grid is refined is called the ``level of refinement''.
+%Cells which are not refined (any further) are called ``\emph{leaf cells}''.
+%They always have the highest level of refinement at their position.
+
+%The basic elements of the data structure in \ramses\ are groups of $2^{\text{dim}}$ sibling cells called ``\emph{octs}''.
+%Each oct belongs to a given level of refinement. 
+%All octs of a given refinement level are sorted in a doubly linked list, so each oct points to the previous and the next oct in the linked list of the particular level.
+%The fully threaded tree structure also demands that each oct points to the parent cell (the cell on the less refined level) as well as the $2 \cdot \text{dim}$ neighbouring parent cells and the $2^{\text{dim}}$ child octs on the next refinement level, assuming they exist. \\
+%The cells on the least refined level are called the coarse grid. 
+%To dynamically modify the AMR structure at each time step, first all cells are being marked for refinement according to user-defined criteria. 
+%Any oct in the tree structure must be surrounded by $3^{\text{dim}}-1$ neighbouring parent cells, which enforces a smooth transition in spatial resolution.
+%Particles belonging to octs are organised in linked lists as well. 
+%A particle belongs to a particular oct if its position fits exactly into the oct boundaries, and all particles that belong to the same oct are linked together by a linked list. 
+%Each oct can access the first particle of its linked list and the number of particles its list contains.
+
+
+To compute the spatial movement of the particles, first the density field $\rho$ is computed using a ``\emph{Cloud-In-Cell}'' (CIC) interpolation scheme.
+The CIC scheme considers all particles to be cubes (``clouds'') of one cell size and of uniform density. 
+The mass of a particle is deposited in cells based on what fraction of its ``cloud'' overlaps with the cell, thus determining the density field.
+Once the density field is known, the Poisson equation (\ref{eq:poisson}) can be solved numerically and the potential $\phi$ is computed.
+\ramses\ utilises a Multigrid solver.
+Now the acceleration for each cell can be obtained, from which the particle acceleration $\tfrac {\de\mathbf{v}_p}{\de t}$ is computed using the inverse CIC interpolation. 
+The acceleration is then integrated over time to compute the particle velocity $\mathbf{v}_p$ and position $\mathbf{x}_p$ using a second-order midpoint scheme.
+
+%For a more detailed description of the code, I refer the reader to the release paper of \ramses\ \parencite{ramses}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

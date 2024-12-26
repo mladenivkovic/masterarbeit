@@ -1,0 +1,21 @@
+\begin{abstract}
+	\section*{Abstract}
+	
+	The implementation of an algorithm to identify dark matter halo merger trees into the adaptive mesh refinement code \ramses\ is presented.
+	The algorithm is fully parallel using MPI and works on the fly.
+	It tracks dark matter substructure individually through particle IDs, thus allowing to follow the formation history of dark matter clumps up to the point where they dissolve beyond the possibility of identification as substructure.	
+	Once a clump merges into another, it is still being tracked by marking the most strongly bound particle of that clump at the last snapshot where it was identified.
+	This allows to check at later snapshots whether the identified merging event truly was one, or whether a misidentification by the density field gradient based clump finding algorithm might have occured.
+    The influence of various definitions of substructure and the maximal number of particles tracked per clump have been tested.	
+	
+	With the known formation history of dark matter structure, galaxies can be introduced in a simulation containing only dark matter particles through use of a parametrised stellar-mass-to-halo-mass (SMHM) relation.
+	In this work, the SMHM relation published by \cite{Behroozi} was used. 
+	The obtained stellar mass functions of central galaxies from $z\sim 0 - 8$ and correlation functions at $z \sim 0$ are compared to observational data.
+	Taking into account that the simulations used to obtain these mock galaxy catalogues didn't have particularly high resolutions with $512^3$ particles and that the main focus of this work is to demonstrate that a merger tree algorithm and the generation of mock galaxy catalogues can be done on the fly, the results show satisfactory agreement with observational data.
+
+		
+		
+%	To demonstrate the influence of user-defined parameters of the merger tree algorithm, the results of tests similar to those of the ``sussing merger tree'' paper series \parencite{SUSSING_COMPARISON} are shown.
+	
+
+\end{abstract}

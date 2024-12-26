@@ -1,0 +1,62 @@
+%===========================================
+\subsection{Halo Finding}
+%===========================================
+
+For simulations of collisionless dark matter in particular, an important tool for problems concerning cosmic structure and its formation is the identification of \emph{haloes}, i.e. gravitationally bound objects made of particles as well as their internal structure and bound objects nested within them, called \emph{subhaloes}. 
+Codes that perform this task are called ``\emph{halo finders}'' or ``\emph{clump finders}''.
+
+
+Over the last decades, a multitude of halo finding tools has been introduced.
+The Halo-Finder Comparison Project \parencite{MAD} lists 29 different codes in the year 2010 and roughly divides them into two distinct groups of codes:
+%
+\begin{enumerate}
+	\item Particle collector codes, where particles are linked together, usually by linking particles that are closer to each other then some specified linking length, a method referred to as ``\emph{friends-of-friends}'' \parencite{FOF}.
+	This implicitly determines some minimal density for the haloes found this way.
+	\item Density peak locator codes, that first find density peaks and then collect particles around those.
+	One frequently used method to identify haloes in such manner is the ``\emph{Spherical Overdensity}'' method \parencite{SO}. 
+	The basic idea is to find groups of particles by growing spherical shells around density peaks until the mean overdensity of the sphere falls below some threshold.
+\end{enumerate}
+%
+
+\phew\ \parencite{PHEW}, the clump finder implemented in \ramses, is also based on first identifying density peaks in the density field $\rho$, but then assigns cells (not particles) to density peaks following the steepest density gradient.
+This assignment gives rise to patches of cells around density peaks, which will separate the mass density field along minima.
+Such a method is frequently referred to as `\emph{watershed segmentation}`.
+Unlike the spherical overdensity method, this allows to identify haloes without the assumption of spherical symmetry.
+The algorithm can be divided in four main steps: 
+
+\begin{enumerate}
+	\item Segmentation
+	
+	Cells containing a sufficiently high density are either marked as density peaks, if there are no denser neighbouring cells around them, or assigned to the same peak their most dense neighbour is also assigned to, thus dividing the density field into patches around density peaks.
+	
+	
+	\item Connectivity Establishment
+	
+	Every peak patch needs knowledge of all its neighbouring peak patches, i.e. patches that share the surface along density minima with it.
+	The maximal surface density between two particular peak patches is considered as the ``\emph{saddle}'' between these two. 
+	Naturally, a peak patch can have multiple neighbouring peak patches. 
+	Out of all the saddles of all the neighbouring peak patches, the one with the highest density is called the ``\emph{key saddle}'' and the neighbour it connects to is referred to as the ``\emph{key neighbour}''.
+	
+	
+	
+	\item Noise Removal
+	
+	Each peak patch is assigned a value representing the contrast to the background called ``\emph{relevance}'', defined as the ratio of the peak's density to its key saddle. 
+	A peak patch is considered noise if its relevance is lower than a user-defined relevance threshold.
+	An irrelevant peak patch is then merged to its key neighbour. 
+	Expressed explicitly, merging a peak patch $i$ into a patch $j$ means that all cells of $i$ inherit the peak label of $j$.
+	
+	
+	\item Substructure Merging
+	
+	Once the noise removal step is completed, the remaining structure consists only of peak patches, essentially clumps of particles, which satisfy the relevance condition. 
+	These clumps represent the structure on the lowest scale.
+	A large halo for example, which can very roughly be described as ``a large clump'' in a first approximation, would be decomposed into many small clumps. In order to identify such a halo as a single object, one more step is necessary:
+	The identified clumps at the lowest scale need to be merged further into composite clumps.
+	All peak patches whose key saddle density is higher than some user-defined saddle threshold are merged into their key neighbour.
+	The saddle threshold defines which clumps should be considered as separate structures and which should be merged and considered as composite structures.
+    This merging is done iteratively and in doing so the hierarchy of substructure is established.
+	
+\end{enumerate}
+
+
